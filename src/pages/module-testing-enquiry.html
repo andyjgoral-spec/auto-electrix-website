@@ -1,0 +1,42 @@
+---
+path: /module-testing-enquiry/
+title: Module Testing Enquiry – Auto Electrix
+description: Send us your module details for testing, repair, programming or ECU cloning. Auto Electrix, mobile auto-electrical specialists across Bournemouth.
+banner_title: Module Testing Enquiry
+banner_text: Tell us about your module and we'll get back to you
+banner_image: banner-2.webp
+breadcrumb: Module Testing Enquiry
+layout: form
+---
+<h1>Module Testing at Auto Electrix</h1>
+<p>Tell us about the module, what needs testing, and why you believe it's faulty. We'll come back to you with the next steps.</p>
+{% form module-testing | Module Testing Enquiry %}
+## Your Details
+### Contact Information
+text | Full Name*
+tel | Telephone*
+email | Email*
+select | Preferred Contact Method | Phone, Email, Text
+### Vehicle Information
+text | Vehicle Make*
+text | Vehicle Model*
+text | Vehicle Registration
+text | Where is the vehicle or module? (town and postcode)* | e.g. Bournemouth BH1
+## The Module
+### Module Details
+select | Type of Module* | Engine ECU, ABS Module, Body Control Module (BCM), Radar Module, Blue&Me Module, Airbag Module, Battery Pack, Other (please specify)
+text | Other module (please specify)
+text | Module Part Number | Printed on the module label
+checkboxes | What do you need? | Testing, Repair, Software update, VIN change, Coding / adaptations, ECU cloning / data transfer, Not sure
+select | Is this a used or replacement module? | No – it's the original, Yes – a used module, Yes – a new module
+## The Fault
+### About the Fault
+textarea | What needs testing?*
+textarea | Why do you believe the module is faulty?*
+textarea | Any fault codes or warning lights?
+select | Has the module been exposed to water? | No, Yes, Not sure
+### Testing
+select | Where would you like it tested?* | At my premises (mobile service), I'll bring the module to you, Not sure – please advise
+### Upload a Photo
+file | Photo of the Module or Label
+{% endform %}
