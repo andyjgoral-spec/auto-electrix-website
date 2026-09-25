@@ -217,6 +217,18 @@ def form(name, title, spec):
     return "\n".join(out)
 
 
+def whatsapp_button():
+    if not site.get("whatsapp"):
+        return ""  # blank in site.json = no button
+    message = "Hi%20Auto%20Electrix%2C%20I%27d%20like%20to%20ask%20about%20my%20vehicle."
+    return (
+        f'<a class="whatsapp-float" href="https://wa.me/{site["whatsapp"]}?text={message}" '
+        f'target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">'
+        f'<svg viewBox="0 0 24 24" aria-hidden="true">{ICONS["whatsapp"]}</svg>'
+        f'<span>Chat on WhatsApp</span></a>'
+    )
+
+
 def phone_link():
     return site["phone"].replace(" ", "")
 
@@ -314,6 +326,7 @@ def main():
         "year": datetime.date.today().year,
         "version": version,
         "social_icons": social_icons(),
+        "whatsapp_button": whatsapp_button(),
         "schema": schema(),
         "workshop_notice": esc(site["workshop_notice"]),
         "service_area": esc(site["service_area"]),
