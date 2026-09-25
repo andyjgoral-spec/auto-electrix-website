@@ -190,9 +190,9 @@ def form(name, title, spec):
 
     total = len(steps)
     out = [
-        f'<form class="enquiry-form" name="{name}" method="POST" action="/thank-you/" '
-        f'data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">',
+        f'<form class="enquiry-form" name="{name}" method="POST" action="/submit" enctype="multipart/form-data">',
         f'<input type="hidden" name="form-name" value="{name}">',
+        f'<input type="hidden" name="form-title" value="{esc(title)}">',
         '<p class="hp"><label>Leave this empty: <input name="bot-field"></label></p>',
         f'<div class="form-head"><h2>{esc(title)}</h2><div class="progress" aria-hidden="true"><span></span></div>'
         f'<p class="step-count" aria-live="polite"></p></div>',
@@ -367,6 +367,14 @@ def main():
         f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>',
         encoding="utf-8",
     )
+    # Cloudflare settings: old WordPress addresses and browser caching
+    (DIST / "_redirects").write_text(
+        "/wp-content/themes/gsuk-2025/lib/assets/docs/privacy-policy.pdf /privacy-policy/ 301\n"
+        "/wp-content/themes/gsuk-2025/lib/assets/docs/cookies-policy.pdf /cookie-policy/ 301\n"
+        "/wp-admin/* / 301\n",
+        encoding="utf-8",
+    )
+    (DIST / "_headers").write_text("/assets/*\n  Cache-Control: public, max-age=604800\n", encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {site['domain']}/sitemap.xml\n", encoding="utf-8")
     if not (site["company"]["number"] and site["company"]["registered_office"]):
         print("  WARNING: add the company number and registered office to site.json (the law requires them on the website)")

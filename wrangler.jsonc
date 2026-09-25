@@ -1,0 +1,18 @@
+// Cloudflare settings for the Auto Electrix website.
+// Cloudflare runs `python3 build.py` then `npx wrangler deploy`.
+{
+  "name": "auto-electrix",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/submit"]
+  },
+  // Sends form enquiries by email. TO_ADDRESS and FROM_ADDRESS are set in the
+  // Cloudflare dashboard, so no email addresses are stored in this repository.
+  "send_email": [{ "name": "ENQUIRIES" }],
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

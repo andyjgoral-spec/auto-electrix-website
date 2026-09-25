@@ -68,16 +68,19 @@ In `site.json`, under `"social"`, paste the full link for each account, for exam
 
 Leave a link blank (`""`) to hide that icon. The Facebook section on the homepage only shows when a Facebook link is filled in.
 
-## Going live (Netlify, free plan)
+## Hosting (Cloudflare, free plan)
 
-1. Make a free account at netlify.com.
-2. Easiest way: go to **Add new site → Deploy manually** and drag the `dist` folder onto the page.
-   Better way: put this folder on GitHub, then **Add new site → Import from GitHub**. Netlify reads `netlify.toml` and builds the site by itself.
-3. **Forms:** go to Site configuration → Forms → **Enable form detection**, then deploy again.
-   Then go to Forms → Form notifications → **Add email notification** and enter your email. Each enquiry is sent to you.
-4. **Domain:** go to Domain management → **Add a domain** and follow the steps. Netlify gives you DNS records to add where you bought your domain. HTTPS is set up for you.
-5. Put your real domain in `site.json` → `"domain"`, then build again. Google uses it.
-6. Test each form once it's live.
+The site runs on Cloudflare as a Worker with static assets (`wrangler.jsonc`).
+Cloudflare rebuilds it every time GitHub changes: build command `python3 build.py`,
+deploy command `npx wrangler deploy`.
+
+`worker/index.js` shows the website and emails form enquiries (with photo attached).
+It needs two settings in the Cloudflare dashboard (the Worker → Settings → Variables and Secrets):
+
+- `TO_ADDRESS`: where enquiries are sent. It must be a verified address in Email Routing.
+- `FROM_ADDRESS`: an address on the website's domain, e.g. `website@yourdomain.uk`
+
+Email Routing must be turned on for the domain.
 
 ## Before switching over
 
@@ -85,6 +88,6 @@ Leave a link blank (`""`) to hide that icon. The Facebook section on the homepag
 - [x] Company number and registered office added (from Companies House)
 - [ ] Add your email address in `src/pages/privacy-policy.html`
 - [ ] Add the new Facebook and Instagram links in `site.json`
-- [ ] Set up form email notifications on Netlify and test all 4 forms
+- [ ] Turn on Email Routing, set TO_ADDRESS and FROM_ADDRESS, and test all 5 forms
 - [ ] Add the new site to Google Search Console and submit `/sitemap.xml`
 - [ ] Optional: add Google Analytics with your own ID. If you do, update `src/pages/cookie-policy.html` and add a cookie banner first.
