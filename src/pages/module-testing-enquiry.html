@@ -9,7 +9,7 @@ breadcrumb: Module Testing Enquiry
 layout: form
 ---
 <h1>Module Testing at Auto Electrix</h1>
-<p>Tell us about the module, what needs testing, and why you believe it's faulty. We'll come back to you with the next steps.</p>
+<p>Tell us about the vehicle, the module and why you believe it's faulty. The more detail you give us, the quicker we can help.</p>
 {% form module-testing | Module Testing Enquiry %}
 ## Your Details
 ### Contact Information
@@ -18,25 +18,32 @@ tel | Telephone*
 email | Email*
 select | Preferred Contact Method | Phone, Email, Text
 ### Vehicle Information
-text | Vehicle Make*
-text | Vehicle Model*
-text | Vehicle Registration
+text | Vehicle Registration*
+text | VIN Number | 17 characters – on your V5C or at the bottom of the windscreen
+text | Make/Model*
 text | Where is the vehicle or module? (town and postcode)* | e.g. Bournemouth BH1
 ## The Module
 ### Module Details
 select | Type of Module* | Engine ECU, ABS Module, Body Control Module (BCM), Radar Module, Blue&Me Module, Airbag Module, Battery Pack, Other (please specify)
 text | Other module (please specify)
 text | Module Part Number | Printed on the module label
-checkboxes | What do you need? | Testing, Repair, Software update, VIN change, Coding / adaptations, ECU cloning / data transfer, Not sure
-select | Is this a used or replacement module? | No – it's the original, Yes – a used module, Yes – a new module
-## The Fault
-### About the Fault
-textarea | What needs testing?*
+### What Do You Need?
+select | What would you like us to do?* | Test and repair my existing module, Price a new replacement module, Clone my module to a replacement module, Program or code a module, Not sure – please advise
+select | Do you already have the replacement part? | Yes – a new module, Yes – a used module, No, Not needed
+checkboxes | Programming needed | Software update, VIN change, Coding / adaptations, ECU cloning / data transfer, Not sure
+## The Problem
+### Detailed Problem Description
 textarea | Why do you believe the module is faulty?*
+textarea | When Did You First Notice the Problem?
 textarea | Any fault codes or warning lights?
 select | Has the module been exposed to water? | No, Yes, Not sure
-### Testing
+## History & Booking
+### Previous Investigation
+textarea | What testing has already been done on the vehicle?
+textarea | Any parts replaced? | Please specify
+### Assessment Preferences
 select | Where would you like it tested?* | At my premises (mobile service), I'll bring the module to you, Not sure – please advise
-### Upload a Photo
+date | Preferred Assessment Date
+### Upload Files
 file | Photo of the Module or Label
 {% endform %}
