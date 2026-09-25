@@ -308,6 +308,7 @@ def main():
     base = {
         "phone": site["phone"],
         "phone_link": phone_link(),
+        "whatsapp": site["whatsapp"],
         "facebook": site["social"]["facebook"],
         "domain": site["domain"],
         "year": datetime.date.today().year,
