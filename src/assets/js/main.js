@@ -78,7 +78,7 @@ document.querySelectorAll(".enquiry-form").forEach((form) => {
     }
   });
 
-  // Netlify allows up to 8 MB per upload
+  // Uploads are limited to 8 MB (the form handler ignores larger files)
   form.querySelectorAll('input[type="file"]').forEach((input) => {
     input.addEventListener("change", () => {
       const file = input.files[0];

@@ -16,7 +16,7 @@
 1. Open the file you want to change (see the table above).
 2. Change the words and save.
 3. Run `python3 build.py`.
-4. If the site is on Netlify and connected to GitHub, Netlify rebuilds it for you when you save to GitHub.
+4. Cloudflare rebuilds the live site by itself when you save to GitHub.
 
 ### Page files
 
