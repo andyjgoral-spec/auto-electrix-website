@@ -1,0 +1,23 @@
+# Netlify settings. Netlify runs the build and publishes the dist/ folder.
+[build]
+  command = "python3 build.py"
+  publish = "dist"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Old WordPress addresses that no longer exist
+[[redirects]]
+  from = "/wp-content/themes/gsuk-2025/lib/assets/docs/privacy-policy.pdf"
+  to = "/privacy-policy/"
+  status = 301
+[[redirects]]
+  from = "/wp-content/themes/gsuk-2025/lib/assets/docs/cookies-policy.pdf"
+  to = "/cookie-policy/"
+  status = 301
+[[redirects]]
+  from = "/wp-admin/*"
+  to = "/"
+  status = 301

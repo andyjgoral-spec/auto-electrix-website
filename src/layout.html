@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="canonical" href="{{canonical}}">
+<meta property="og:locale" content="en_GB">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{canonical}}">
+<meta property="og:site_name" content="Auto Electrix">
+<meta property="og:image" content="{{domain}}/assets/img/banner-1.webp">
+<link rel="icon" href="/assets/img/favicon-48.png" sizes="48x48">
+<link rel="icon" href="/assets/img/favicon.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/barlow-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v={{version}}">
+<script type="application/ld+json">{{schema}}</script>
+</head>
+<body class="{{body_class}}">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="/"><img src="/assets/img/logo.webp" alt="Auto Electrix" width="678" height="90"></a>
+
+    <div class="header-right">
+      <nav class="top-nav" aria-label="Top">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about-us/">About Us</a></li>
+          <li><a href="/our-reviews/">Our Reviews</a></li>
+          <li><a href="/our-customer-journey/">Our Customer Journey</a></li>
+          <li><a href="/contact-us/">Contact Us</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <a class="header-call" href="tel:{{phone_link}}"><span>Call Us:</span> {{phone}}</a>
+        <a class="header-book" href="/initial-assessment-enquiry/">Book Initial Assessment</a>
+        {{social_icons}}
+      </div>
+      <nav class="main-nav" aria-label="Main">
+        <ul>
+          <li class="has-sub">
+            <a href="/services/">Auto-Electrical Services</a>
+            <ul class="sub">
+              <li><a href="/services/adas-calibration/">ADAS Calibration</a></li>
+              <li><a href="/services/advanced-module-testing-programming/">Advanced Module Testing &amp; Programming</a></li>
+              <li><a href="/services/advanced-vehicle-diagnostics/">Advanced Vehicle Diagnostics</a></li>
+              <li><a href="/services/">All Auto-Electrical Services…</a></li>
+            </ul>
+          </li>
+          <li><a href="/our-customer-journey/">Our Customer Journey</a></li>
+          <li><a href="/services/advanced-vehicle-diagnostics/">Advanced Vehicle Diagnostics</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="mobile-actions">
+      <a class="icon-btn" href="tel:{{phone_link}}" aria-label="Call us on {{phone}}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+      </a>
+      <button class="icon-btn menu-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile" hidden>
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/initial-assessment-enquiry/">Book Initial Assessment</a></li>
+      <li><a href="/about-us/">About Us</a></li>
+      <li><a href="/our-customer-journey/">Our Customer Journey</a></li>
+      <li><a href="/services/adas-calibration/">ADAS Calibration</a></li>
+      <li><a href="/services/advanced-module-testing-programming/">Advanced Module Testing &amp; Programming</a></li>
+      <li><a href="/services/advanced-vehicle-diagnostics/">Advanced Vehicle Diagnostics</a></li>
+      <li><a href="/our-reviews/">Our Reviews</a></li>
+      <li><a href="/contact-us/">Contact Us</a></li>
+      <li><a href="tel:{{phone_link}}">Call Us: {{phone}}</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="notice-bar">
+  <div class="container"><strong>Mobile service across {{service_area}}.</strong> <span>{{workshop_notice}}.</span></div>
+</div>
+
+<main id="main">
+{{banner}}
+{{content}}
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h5>Useful Links</h5>
+      <ul class="footer-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about-us/">About Us</a></li>
+        <li><a href="/our-reviews/">Our Reviews</a></li>
+        <li><a href="/our-customer-journey/">Our Customer Journey</a></li>
+        <li><a href="/contact-us/">Contact Us</a></li>
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><a href="/cookie-policy/">Cookie Policy</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Auto-Electrical Services</h5>
+      <ul class="footer-links two-col">
+        <li><a href="/our-customer-journey/">Our Customer Journey</a></li>
+        <li><a href="/services/adas-calibration/">ADAS Calibration</a></li>
+        <li><a href="/services/advanced-module-testing-programming/">Advanced Module Testing &amp; Programming</a></li>
+        <li><a href="/services/advanced-vehicle-diagnostics/">Advanced Vehicle Diagnostics</a></li>
+        <li><a href="/services/">All Auto-Electrical Services…</a></li>
+      </ul>
+    </div>
+    <div class="footer-logo">
+      <img src="/assets/img/logo.webp" alt="Auto Electrix" width="678" height="90" loading="lazy">
+      {{social_icons}}
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">© {{legal_name}} t/a Auto Electrix - {{year}}<br><span class="company-line">{{company_line}}</span></div>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js?v={{version}}" defer></script>
+</body>
+</html>

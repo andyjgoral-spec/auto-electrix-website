@@ -1,0 +1,42 @@
+---
+path: /contact-us/
+title: Contact Auto Electrix in Bournemouth - 01202 509430
+description: Call us today on 01202 509430, submit an online enquiry and we'll come to you anywhere in the Bournemouth area.
+banner_title: Contact Us
+banner_text: Give Auto Electrix a call or send us an email, we are happy to help...
+banner_image: banner-3.webp
+breadcrumb: Contact Us
+layout: form
+---
+<h1>Contact Auto Electrix in Bournemouth</h1>
+<p>We are a mobile service covering {{service_area}}, so we come to you. Call us on <a href="tel:{{phone_link}}">{{phone}}</a>, message us on <a href="https://wa.me/{{whatsapp}}">WhatsApp</a>, or fill in the form below.</p>
+{% form general-enquiry | General Enquiry %}
+## Your Details
+### Contact Information
+text | Full Name*
+tel | Telephone*
+email | Email*
+### Vehicle Information
+text | Where is the vehicle? (town and postcode)* | e.g. Bournemouth BH1
+text | Vehicle Make* | Audi, BMW, Mercedes etc.
+text | Vehicle Model* | 3 Series, C-Class, etc.
+text | Vehicle Registration*
+text | Mileage
+select | Engine Type | Petrol, Diesel, Hybrid, Electric
+text | Engine Size
+## The Problem
+### Service Requirements
+select | Type of Service Needed* | Electrical Fault Diagnosis, ADAS Calibration, Vehicle Programming/Coding, EEPROM Analysis, General Electrical Repair, Other (please specify)
+textarea | Please Specify
+### Problem Description
+textarea | Describe the issue*
+text | When did the problem start?
+textarea | Any warning lights or error messages?
+select | Has this been looked at before? | Yes, No
+textarea | If yes, what has been done previously?
+## Booking
+### Assessment Preferences
+date | Preferred Assessment Date
+### Upload Images
+file | Upload an Image
+{% endform %}

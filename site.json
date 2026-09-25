@@ -1,0 +1,90 @@
+{
+  "business_name": "Auto Electrix",
+  "company": {
+    "legal_name": "Auto Electrix Group Ltd",
+    "number": "16486404",
+    "registered_in": "England and Wales",
+    "registered_office": "864 Christchurch Road, Bournemouth, BH7 6DQ"
+  },
+  "domain": "https://www.YOUR-DOMAIN.co.uk",
+  "phone": "01202 509430",
+  "whatsapp": "447443969463",
+  "service_area": "Bournemouth and the surrounding area",
+  "workshop_notice": "Our new, larger workshop opens in January 2027",
+  "hours": [
+    [
+      "Monday",
+      "08:30 - 17:00"
+    ],
+    [
+      "Tuesday",
+      "08:30 - 17:00"
+    ],
+    [
+      "Wednesday",
+      "08:30 - 17:00"
+    ],
+    [
+      "Thursday",
+      "08:30 - 17:00"
+    ],
+    [
+      "Friday",
+      "08:30 - 16:00"
+    ],
+    [
+      "Saturday",
+      "Closed"
+    ],
+    [
+      "Sunday",
+      "Closed"
+    ]
+  ],
+  "social": {
+    "facebook": "",
+    "instagram": "",
+    "tiktok": "https://www.tiktok.com/@autoelectrix"
+  },
+  "google_review_url": "https://search.google.com/local/writereview?placeid=ChIJceY7TYqjc0gRihLKIgS8TDA",
+  "google_rating": "4.7",
+  "google_review_count": "Over 120 Reviews",
+  "reviews": [
+    [
+      "Helen Dexter",
+      "Brilliant service, can’t recommend them enough. Value for money, courteous, fast service & reasonably priced."
+    ],
+    [
+      "Sarah O'Keefe",
+      "Excellent series and communication when other companies couldn't help they was able to do quicker than scheduled and at decent price thank you so much!"
+    ],
+    [
+      "Chris Taylor",
+      "2018 Jaguar XE. What an amazing service these guys provide. Contacted them mid week with a serious issue on my car, they moved things around to fit me in on a Friday, 2 hours later my car is fixed, issue resolved forever and did a performance upgrade pretty much free of charge. It’s hard to find good, decent people in this world, accompany this quality with expertise = my new go to guys for car electrical and ECU issues and upgrades. 5 star service all day long. Thanks guys"
+    ],
+    [
+      "Ian Wallace",
+      "Excellent service from booking in to collection, kept us informed of diagnostic procedures and work to be carried out, quoted beforehand and then after accepting work was done promptly. Would recommend for all electrical work on any make of vehicles"
+    ],
+    [
+      "David Calf",
+      "Very nice staff honest and very quick at finding the problems HIGHLY RECOMMEND"
+    ],
+    [
+      "Aj",
+      "Really helpful and easy to do business with. They liased with the vehicle recovery company and got my car fixed in no time and for a third of what I'd been quoted from another garage."
+    ],
+    [
+      "Jon Burnham",
+      "Andy and his team solved the electronics problems with our Range Rover which nobody else could. Thoroughly recommended!"
+    ],
+    [
+      "Patryk Biernat",
+      "Great service. Got in touch on Friday, booked me for Wednesday assessment took them an h to let me know the issues found and repaired by the end of the same day. Reasonable price also."
+    ],
+    [
+      "Richard Levell",
+      "Really efficient service. Very clear assessment of the issues that is presented in a way that is easily understandable to those of us who know very little."
+    ]
+  ]
+}

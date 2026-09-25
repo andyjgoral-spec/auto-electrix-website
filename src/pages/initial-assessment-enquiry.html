@@ -1,0 +1,48 @@
+---
+path: /initial-assessment-enquiry/
+title: Initial Assessment Enquiry – Auto Electrix
+description: Auto Electrix are The South West's Leading Auto-Electrical Specialists. For an initial assessment of a problem get in touch online now.
+banner_title: Initial Assessment Enquiry
+banner_text: Got a problem with your car? Book an initial assessment and we will come to you
+banner_image: banner-3.webp
+breadcrumb: Initial Assessment Enquiry
+layout: form
+---
+<h1>Initial Assessment at Auto Electrix in Bournemouth</h1>
+{% form initial-assessment | Initial Assessment Enquiry %}
+## Your Details
+### Contact Information
+text | Full Name*
+tel | Telephone*
+email | Email*
+select | Preferred Contact Method | Phone, Email, Text
+### Vehicle Information
+text | Where is the vehicle? (town and postcode)* | e.g. Bournemouth BH1
+text | Vehicle Registration*
+text | Make/Model*
+## The Problem
+### Detailed Problem Description
+textarea | Describe the issue in your own words*
+textarea | When Did You First Notice the Problem?*
+select | Problem frequency | Constant, Intermittent, Getting worse, Only in certain conditions
+## Vehicle Status
+### Current Vehicle Status
+select | Vehicle Condition | Fully driveable, Limited functionality, Unsafe to drive, Won't start, Completely immobilised
+### Warning Indicators
+select | Any dashboard warning lights? | Yes, No
+textarea | Which ones?
+textarea | Any error messages or codes?
+textarea | Any unusual sounds, smells, behaviour?
+## History & Booking
+### Previous Investigation
+select | Have you had this looked at before? | Yes, No
+textarea | If yes, where and what was done?
+textarea | Any parts replaced? | Please specify
+### Assessment Preferences
+date | Preferred Assessment Date
+### Technical Background
+select | Vehicle under warranty? | Yes, No
+textarea | Any time constraints for repair?
+### Upload Files
+file | Upload a File
+{% endform %}
