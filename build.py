@@ -36,7 +36,8 @@ ICONS = {
 
 def social_icons():
     links = dict(site["social"])
-    links["whatsapp"] = f"https://wa.me/{site['whatsapp']}"
+    if site.get("whatsapp"):  # blank in site.json = no WhatsApp icon
+        links["whatsapp"] = f"https://wa.me/{site['whatsapp']}"
     out = []
     for name in ("facebook", "whatsapp", "instagram", "tiktok"):
         if not links.get(name):
@@ -307,7 +308,6 @@ def main():
     base = {
         "phone": site["phone"],
         "phone_link": phone_link(),
-        "whatsapp": site["whatsapp"],
         "facebook": site["social"]["facebook"],
         "domain": site["domain"],
         "year": datetime.date.today().year,
