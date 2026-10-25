@@ -38,6 +38,7 @@
       <input type="text" name="name" value="{{ s.name if s else '' }}" placeholder="New service" aria-label="Service name" required>
       <input type="number" name="sort_order" value="{{ s.sort_order if s else 99 }}" aria-label="Order" class="narrow">
       <label class="check"><input type="checkbox" name="active" value="1" {% if not s or s.active %}checked{% endif %}><span>Active</span></label>
+      <label class="check"><input type="checkbox" name="offroad_only" value="1" {% if s and s.offroad_only %}checked{% endif %}><span>Off-road only</span></label>
       <button class="btn secondary small" type="submit">{{ 'Save' if s else 'Add' }}</button>
     </form>
     {% endfor %}

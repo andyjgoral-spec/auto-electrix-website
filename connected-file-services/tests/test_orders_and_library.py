@@ -247,3 +247,26 @@ def test_admin_activates_pending_workshop(app, admin_browser):
     admin_browser.post(f"/admin/workshops/{ws.id}", {"action": "activate"})
     db.session.refresh(ws)
     assert ws.status == "active"
+
+
+def test_offroad_service_needs_offroad_declaration(app):
+    ws, user = make_workshop(credits=2)
+    b = Browser(app)
+    b.login(user.email)
+    service = "DPF off (off-road / motorsport only)"
+    r = upload(b, ecu_bytes(), service_requested=service)
+    assert r.status_code == 400 and b"off-road declaration" in r.data
+    assert db.session.scalar(select(Order)) is None
+    r = upload(b, ecu_bytes(), service_requested=service, offroad_declaration="1")
+    assert r.status_code == 302
+    order = db.session.scalar(select(Order))
+    assert order.offroad_declaration is True and order.service_requested == service
+
+
+def test_normal_service_needs_no_offroad_declaration(app):
+    _, user = make_workshop()
+    b = Browser(app)
+    b.login(user.email)
+    r = upload(b, ecu_bytes(), service_requested="Pops & bangs / crackle map")
+    assert r.status_code == 302
+    assert db.session.scalar(select(Order)).offroad_declaration is False

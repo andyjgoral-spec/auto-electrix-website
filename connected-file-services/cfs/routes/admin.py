@@ -292,11 +292,12 @@ def pricing():
                     raise BusinessError("Service name is required.")
                 svc.name = name[:120]
                 svc.active = bool(request.form.get("active"))
+                svc.offroad_only = bool(request.form.get("offroad_only"))
                 svc.sort_order = request.form.get("sort_order", type=int) or 0
                 if not svc_id:
                     db.session.add(svc)
                 db.session.flush()
-                audit("settings.service_saved", svc, name=svc.name, active=svc.active)
+                audit("settings.service_saved", svc, name=svc.name, active=svc.active, offroad_only=svc.offroad_only)
                 db.session.commit()
                 flash("Service saved.", "success")
             else:

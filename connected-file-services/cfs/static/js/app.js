@@ -46,3 +46,15 @@
 document.querySelectorAll("[data-print]").forEach(function (b) {
   b.addEventListener("click", function () { window.print(); });
 });
+
+(function () {
+  var select = document.getElementById("service_requested");
+  var box = document.querySelector("[data-offroad-box]");
+  if (!select || !box) return;
+  function update() {
+    var opt = select.options[select.selectedIndex];
+    box.hidden = !(opt && opt.hasAttribute("data-offroad"));
+  }
+  select.addEventListener("change", update);
+  update();
+})();

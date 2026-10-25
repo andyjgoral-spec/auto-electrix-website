@@ -135,7 +135,8 @@ def create_order(user, fields, filename, data):
     original = OrderFile(order=order, kind="original", version=1, uploaded_by=user, **stored.__dict__)
     db.session.add(original)
     db.session.flush()
-    audit("order.submitted", order, actor=user, reference=order.reference, sha256=stored.sha256, size=stored.size)
+    audit("order.submitted", order, actor=user, reference=order.reference, sha256=stored.sha256, size=stored.size,
+          service=order.service_requested, offroad_declaration=order.offroad_declaration)
     audit("file.uploaded", original, actor=user, order=order.reference, kind="original", sha256=stored.sha256)
     notify_admins(f"New order {order.reference} from {workshop.name}", order=order)
     db.session.commit()

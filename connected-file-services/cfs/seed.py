@@ -23,17 +23,22 @@ DEFAULT_PACKAGES = [
     ("10+2 package", "Pay for ten files, get twelve", 70000, 12, 3),
 ]
 
-# Emissions-system removal (DPF/EGR/AdBlue delete) is deliberately not seeded:
-# it is illegal for road vehicles in the UK and EU. Admins manage this list.
+# (name, off-road only). Emissions-system removal is illegal on road vehicles in
+# the UK and EU, so those services require a signed off-road declaration.
 DEFAULT_SERVICES = [
-    "Stage 1 performance calibration",
-    "Stage 2 performance calibration",
-    "Economy calibration",
-    "Speed limiter adjustment (fleet)",
-    "Gearbox (TCU) calibration",
-    "Start/stop default setting",
-    "Original file review / diagnostic",
-    "Other (describe in notes)",
+    ("Stage 1 performance calibration", False),
+    ("Stage 2 performance calibration", False),
+    ("Economy calibration", False),
+    ("Pops & bangs / crackle map", False),
+    ("Speed limiter adjustment (fleet)", False),
+    ("Gearbox (TCU) calibration", False),
+    ("Start/stop default setting", False),
+    ("DTC (fault code) removal", False),
+    ("DPF off (off-road / motorsport only)", True),
+    ("EGR off (off-road / motorsport only)", True),
+    ("AdBlue / SCR off (off-road / motorsport only)", True),
+    ("Original file review / diagnostic", False),
+    ("Other (describe in notes)", False),
 ]
 
 DEMO_PASSWORD = "DemoPass2026"
@@ -48,8 +53,8 @@ def ensure_defaults():
         for name, desc, price, credits, order in DEFAULT_PACKAGES:
             db.session.add(PricePackage(name=name, description=desc, price_pence=price, credits=credits, sort_order=order))
     if not db.session.scalar(select(ServiceOption).limit(1)):
-        for i, name in enumerate(DEFAULT_SERVICES):
-            db.session.add(ServiceOption(name=name, sort_order=i))
+        for i, (name, offroad) in enumerate(DEFAULT_SERVICES):
+            db.session.add(ServiceOption(name=name, sort_order=i, offroad_only=offroad))
     db.session.commit()
 
 

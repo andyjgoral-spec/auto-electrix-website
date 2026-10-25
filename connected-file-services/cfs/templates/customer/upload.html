@@ -45,8 +45,12 @@
   <div class="field"><label for="service_requested">Service requested</label>
     <select id="service_requested" name="service_requested" required>
       <option value="">Choose…</option>
-      {% for s in services %}<option {% if form.service_requested == s.name %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+      {% for s in services %}<option {% if form.service_requested == s.name %}selected{% endif %} {% if s.offroad_only %}data-offroad{% endif %}>{{ s.name }}</option>{% endfor %}
     </select></div>
+  <div class="notice warn" data-offroad-box>
+    <label class="check"><input type="checkbox" name="offroad_declaration" value="1" {% if form.offroad_declaration %}checked{% endif %}>
+      <span><strong>Off-road declaration</strong> (required for services marked off-road / motorsport only): I confirm this vehicle will be used only off the public road or in motorsport. I understand that removing or disabling emissions equipment on a road vehicle is an offence and will fail the MOT, and that I and the vehicle owner are responsible for how the vehicle is used.</span></label>
+  </div>
   <div class="field"><label for="customer_notes">Notes for CAT <span class="req">(optional)</span></label>
     <textarea id="customer_notes" name="customer_notes" maxlength="2000" placeholder="Modifications on the vehicle, fault codes, anything we should know">{{ form.customer_notes or '' }}</textarea></div>
   </fieldset>

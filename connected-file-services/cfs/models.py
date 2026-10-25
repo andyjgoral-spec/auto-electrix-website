@@ -141,6 +141,8 @@ class ServiceOption(db.Model):
     name = db.Column(db.String(120), nullable=False, unique=True)
     active = db.Column(db.Boolean, nullable=False, default=True)
     sort_order = db.Column(db.Integer, nullable=False, default=0)
+    # Emissions-related services need a signed off-road / motorsport declaration.
+    offroad_only = db.Column(db.Boolean, nullable=False, default=False)
 
 
 class Payment(db.Model):
@@ -216,6 +218,7 @@ class Order(db.Model):
     service_requested = db.Column(db.String(120), nullable=False)
     customer_notes = db.Column(db.Text)
     declaration_accepted = db.Column(db.Boolean, nullable=False, default=False)
+    offroad_declaration = db.Column(db.Boolean, nullable=False, default=False)
 
     credits_charged = db.Column(db.Integer, nullable=False, default=1)
     admin_notes = db.Column(db.Text)

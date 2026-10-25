@@ -147,6 +147,7 @@
         <dt>Read</dt><dd>{{ order.read_tool or '—' }}{% if order.read_method %} ({{ order.read_method }}){% endif %}</dd>
         <dt>Notes</dt><dd>{{ order.customer_notes or '—' }}</dd>
         <dt>Declaration</dt><dd>{{ 'Accepted' if order.declaration_accepted else 'Not accepted' }}</dd>
+        {% if order.offroad_declaration %}<dt>Off-road</dt><dd><strong>Off-road / motorsport declaration signed</strong></dd>{% endif %}
         <dt>Submitted by</dt><dd>{{ order.submitted_by.name }}<br><span class="muted">{{ order.submitted_by.email }}</span></dd>
       </dl>
     </section>

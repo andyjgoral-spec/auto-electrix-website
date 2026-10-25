@@ -157,5 +157,5 @@ flask --app wsgi seed-demo --reset               # wipe and reload demo data
 
 ## Important
 
-- **Emissions services:** removing or disabling DPF, EGR or AdBlue/SCR systems is illegal for road vehicles in the UK and EU. These services are deliberately not in the default list. Check with a solicitor before adding any service that changes emissions equipment.
+- **Emissions services:** DPF, EGR and AdBlue/SCR off are in the default list but marked **off-road only**. Workshops must tick an off-road / motorsport declaration to order them, and it is saved on the order and in the audit log. Using a road vehicle with emissions equipment removed is an offence in the UK and EU and fails the MOT. The declaration is evidence of what the customer told you; it is not legal protection on its own. Get a solicitor to check your terms. You can mark any service as off-road only, or switch it off, under **Pricing**.
 - **Not yet production-ready:** see Stage 2 above. In particular, add migrations, off-site file backups and HTTPS before taking real customer files or payments.

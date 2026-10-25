@@ -75,8 +75,11 @@ def upload():
             fields["vin"] = fields["vin"].upper()
             if len(fields["vin"]) != 17:
                 errors.append("A VIN is 17 characters. Leave it blank if you do not have it.")
-        if fields["service_requested"] and fields["service_requested"] not in {s.name for s in services}:
+        chosen = next((s for s in services if s.name == fields["service_requested"]), None)
+        if fields["service_requested"] and chosen is None:
             errors.append("Choose a service from the list.")
+        if chosen and chosen.offroad_only and not form.get("offroad_declaration"):
+            errors.append(f"“{chosen.name}” is for off-road or motorsport use only. Please confirm the off-road declaration.")
         if not form.get("declaration"):
             errors.append("Please confirm the declaration about this file.")
         upload_file = request.files.get("ecu_file")
@@ -84,6 +87,7 @@ def upload():
             errors.append("Choose the original ECU file to upload.")
         if not errors:
             fields["declaration_accepted"] = True
+            fields["offroad_declaration"] = bool(chosen and chosen.offroad_only)
             try:
                 order = create_order(g.user, fields, upload_file.filename, upload_file.read())
             except (FileRejected, BusinessError) as exc:
