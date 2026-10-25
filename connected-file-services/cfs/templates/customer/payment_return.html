@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+<div class="card">
+  {% if payment.status == 'paid' %}
+    <h1>Payment received</h1><p>{{ payment.credits }} credits have been added to your account.</p>
+    <div class="btn-row"><a class="btn" href="{{ url_for('customer.invoice_detail', invoice_id=payment.invoice.id) }}">View invoice</a>
+      <a class="btn secondary" href="{{ url_for('customer.upload') }}">Upload a file</a></div>
+  {% elif payment.status == 'failed' %}
+    <h1>Payment not completed</h1><p>No credits were added. <a href="{{ url_for('customer.credits') }}">Try again</a>.</p>
+  {% else %}
+    <h1>Confirming your payment…</h1>
+    <p>Stripe is confirming the payment. Credits are added automatically, usually within a few seconds. Refresh this page to check.</p>
+    <a class="btn secondary" href="{{ url_for('payments.checkout_return', payment_id=payment.id) }}">Refresh</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, pill %}
+{% block title %}Library #{{ entry.id }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow"><a href="{{ url_for('admin.library') }}">Library</a></div>
+  <h1><span class="mono">LIB{{ entry.id }}</span> · v{{ entry.version }}</h1><p>{{ entry.vehicle_make }} {{ entry.vehicle_model }} · {{ entry.service }}</p></div>{{ pill(entry.status) }}</div>
+<div class="grid split">
+  <div class="stack">
+    <section class="card"><h2>Compatibility fingerprint</h2>
+      <p class="small muted">Offered only for orders where every one of these matches exactly.</p>
+      <dl class="dl"><dt>ECU manufacturer</dt><dd>{{ entry.ecu_manufacturer }}</dd><dt>ECU model</dt><dd>{{ entry.ecu_model }}</dd>
+        <dt>Hardware no.</dt><dd class="mono">{{ entry.hardware_number }}</dd><dt>Software no.</dt><dd class="mono">{{ entry.software_number }}</dd>
+        <dt>Original size</dt><dd>{{ '{:,}'.format(entry.original_size) }} bytes</dd><dt>Original SHA-256</dt><dd class="mono small break">{{ entry.original_sha256 }}</dd></dl></section>
+    <section class="card"><h2>Calibration file</h2>
+      <dl class="dl"><dt>File</dt><dd>{{ entry.filename }}</dd><dt>Size</dt><dd>{{ entry.size|filesize }}</dd><dt>SHA-256</dt><dd class="mono small break">{{ entry.sha256 }}</dd>
+        <dt>Validated</dt><dd>{{ entry.validated_at|dt }} by {{ entry.validated_by.name }}</dd>
+        {% if entry.source_order %}<dt>Source order</dt><dd><a class="mono" href="{{ url_for('admin.order_detail', order_id=entry.source_order_id) }}">{{ entry.source_order.reference }}</a></dd>{% endif %}
+        <dt>Notes</dt><dd>{{ entry.notes or '—' }}</dd></dl>
+      <div class="btn-row mt">
+        <form method="post">{{ csrf() }}<button class="btn secondary" name="action" value="download" type="submit">Download</button></form>
+        {% if entry.status == 'validated' %}
+        <form method="post" data-confirm="Retire this library file? It will no longer be offered as a match.">{{ csrf() }}
+          <input type="hidden" name="reason" value="Retired by admin"><button class="btn danger" name="action" value="retire" type="submit">Retire</button></form>{% endif %}
+      </div></section>
+  </div>
+  <div class="stack">
+    <section class="card"><h2>Version history</h2>
+      <ul class="timeline">{% for v in versions %}<li><a href="{{ url_for('admin.library_detail', entry_id=v.id) }}">v{{ v.version }} · LIB{{ v.id }}</a> {{ pill(v.status) }}
+        <div class="muted small">{{ v.validated_at|dt }} · {{ v.validated_by.name }}</div></li>{% endfor %}</ul></section>
+    <section class="card"><h2>Delivered to</h2>
+      {% if used_in %}<ul>{% for f in used_in %}<li><a class="mono" href="{{ url_for('admin.order_detail', order_id=f.order_id) }}">{{ f.order.reference }}</a> · {{ f.created_at|dt('%d %b %Y') }}</li>{% endfor %}</ul>
+      {% else %}<p class="muted">Not used yet.</p>{% endif %}</section>
+    <section class="card"><h2>Audit trail</h2>
+      <ul class="timeline">{% for a in history %}<li><span class="mono small">{{ a.action }}</span><div class="muted small">{{ a.created_at|dt }} · {{ a.actor_email }}</div></li>{% endfor %}</ul></section>
+  </div>
+</div>
+{% endblock %}

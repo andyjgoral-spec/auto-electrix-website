@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}CAT overview{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Connected Automotive Technologies</div><h1>Overview</h1></div>
+  <a class="btn secondary" href="{{ url_for('admin.reports') }}">Reports</a></div>
+{% if pending_workshops %}<div class="notice"><strong>{{ pending_workshops }} workshop{{ 's' if pending_workshops != 1 }} awaiting verification.</strong> <a href="{{ url_for('admin.workshops', status='pending') }}">Review now</a></div>{% endif %}
+<div class="grid grid-4">
+  <a class="card dark stat" href="{{ url_for('admin.orders', status='submitted') }}"><span class="stat-label">Awaiting review</span><span class="stat-value">{{ counts.get('submitted', 0) }}</span><span class="stat-foot muted">Approve or reject</span></a>
+  <a class="card stat" href="{{ url_for('admin.orders', status='in_progress') }}"><span class="stat-label">In progress</span><span class="stat-value">{{ counts.get('in_progress', 0) }}</span><span class="stat-foot">Being calibrated</span></a>
+  <div class="card stat"><span class="stat-label">Completed · 30 days</span><span class="stat-value">{{ completed_30 }}</span><span class="stat-foot">Avg turnaround {{ avg_turnaround|hours }} (target {{ target_hours|hours }})</span></div>
+  <div class="card stat"><span class="stat-label">Revenue · 30 days</span><span class="stat-value">{{ revenue_30|money }}</span><span class="stat-foot">Net of VAT</span></div>
+</div>
+<section class="card mt">
+  <div class="card-head"><h2>Work queue</h2><a class="small" href="{{ url_for('admin.orders') }}">All orders</a></div>
+  {% if queue %}{% with orders=queue %}{% include "partials/admin_order_rows.html" %}{% endwith %}
+  {% else %}<p class="muted">The queue is clear.</p>{% endif %}
+</section>
+{% endblock %}

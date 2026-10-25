@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf %}
+{% block title %}File credits{% endblock %}
+{% block content %}
+{% include "partials/pending_notice.html" %}
+<div class="page-head"><div><h1>File credits</h1><p>Prepaid credits. One credit covers one ECU file service.</p></div>
+  <div class="card dark stat"><span class="stat-label">Balance</span><span class="stat-value">{{ ws.credit_balance }}</span></div></div>
+{% if not stripe_enabled %}
+<div class="notice"><strong>Demo payments.</strong> Stripe keys are not configured, so purchases use a demonstration checkout and no money is taken.</div>
+{% endif %}
+<div class="grid grid-3">
+  {% for p, amt in packages %}
+  <div class="card price-card {{ 'featured' if loop.index == 3 }}">
+    <div>{% if loop.index == 3 %}<span class="tag">Best value</span>{% endif %}<h2 class="mt">{{ p.name }}</h2>
+      <p class="muted small">{{ p.description or '' }}</p></div>
+    <div class="price">{{ amt.net|money }} <small>+ VAT</small></div>
+    <div class="small muted">{{ p.credits }} credit{{ 's' if p.credits != 1 }} · {{ (amt.net // p.credits)|money }} per file<br>
+      {{ amt.gross|money }} including VAT at {{ amt.rate_bp|pct }}</div>
+    <form method="post" action="{{ url_for('payments.checkout', package_id=p.id) }}">{{ csrf() }}
+      <button class="btn block" type="submit" {% if not ws.is_active %}disabled{% endif %}>Buy {{ p.credits }} credit{{ 's' if p.credits != 1 }}</button></form>
+  </div>
+  {% endfor %}
+</div>
+<section class="card mt">
+  <div class="card-head"><h2>Credit history</h2><a class="small" href="{{ url_for('customer.invoices') }}">Invoices</a></div>
+  {% if ledger %}
+  <div class="table-wrap"><table class="responsive">
+    <thead><tr><th>Date</th><th>Description</th><th class="num">Change</th><th class="num">Balance</th></tr></thead>
+    <tbody>{% for t in ledger %}
+      <tr><td data-label="Date" class="nowrap">{{ t.created_at|dt }}</td><td data-label="Description">{{ t.reason }}</td>
+      <td data-label="Change" class="num">{{ '%+d'|format(t.delta) }}</td><td data-label="Balance" class="num">{{ t.balance_after }}</td></tr>
+    {% endfor %}</tbody></table></div>
+  {% else %}<p class="muted">No credit activity yet.</p>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% from "partials/macros.html" import pill %}
+<div class="table-wrap"><table class="responsive">
+  <thead><tr><th>Reference</th><th>Workshop</th><th>Vehicle</th><th>ECU · HW / SW</th><th>Service</th><th>Status</th><th>Age</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    {% set age = ((now or o.created_at) - o.created_at).total_seconds() / 3600 if now else None %}
+    <tr data-href="{{ url_for('admin.order_detail', order_id=o.id) }}">
+      <td data-label="Reference"><a class="mono" href="{{ url_for('admin.order_detail', order_id=o.id) }}">{{ o.reference }}</a></td>
+      <td data-label="Workshop">{{ o.workshop.name }}</td>
+      <td data-label="Vehicle">{{ o.vehicle_make }} {{ o.vehicle_model }}</td>
+      <td data-label="ECU">{{ o.ecu_manufacturer }} {{ o.ecu_model }}<div class="mono small muted">{{ o.hardware_number }} / {{ o.software_number }}</div></td>
+      <td data-label="Service">{{ o.service_requested }}</td>
+      <td data-label="Status">{{ pill(o.status) }}</td>
+      <td data-label="Submitted" class="nowrap">{% if age is not none %}{{ age|hours }}{% if age > target_hours %} <span class="pill rejected">late</span>{% endif %}{% else %}{{ o.created_at|dt }}{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody></table></div>

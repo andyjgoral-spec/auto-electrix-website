@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}Workshops{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Workshops</h1><p>Customer accounts and credit balances.</p></div></div>
+<form class="filters" method="get">
+  <div class="chips">{% for key, label in [(None, 'All'), ('pending', 'Awaiting verification'), ('active', 'Active'), ('suspended', 'Suspended')] %}
+    <a class="chip {{ 'active' if status == key }}" href="{{ url_for('admin.workshops', status=key, q=q or None) }}">{{ label }}</a>{% endfor %}</div>
+  {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <input type="search" name="q" value="{{ q }}" placeholder="Name, contact or postcode" aria-label="Search workshops">
+  <button class="btn secondary small" type="submit">Search</button>
+</form>
+<div class="card">
+{% if workshops %}
+<div class="table-wrap"><table class="responsive">
+  <thead><tr><th>Workshop</th><th>Contact</th><th>Location</th><th class="num">Credits</th><th class="num">Orders</th><th>Status</th><th>Joined</th></tr></thead>
+  <tbody>{% for w in workshops %}
+    <tr data-href="{{ url_for('admin.workshop_detail', workshop_id=w.id) }}">
+      <td data-label="Workshop"><a href="{{ url_for('admin.workshop_detail', workshop_id=w.id) }}"><strong>{{ w.name }}</strong></a></td>
+      <td data-label="Contact">{{ w.contact_name }}</td><td data-label="Location">{{ w.city }}, {{ w.country }}</td>
+      <td data-label="Credits" class="num">{{ w.credit_balance }}</td><td data-label="Orders" class="num">{{ order_counts.get(w.id, 0) }}</td>
+      <td data-label="Status">{{ pill(w.status) }}</td><td data-label="Joined" class="nowrap">{{ w.created_at|dt('%d %b %Y') }}</td></tr>
+  {% endfor %}</tbody></table></div>
+{% else %}<p class="muted">No workshops found.</p>{% endif %}
+</div>
+{% endblock %}

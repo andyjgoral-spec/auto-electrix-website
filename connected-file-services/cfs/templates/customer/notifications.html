@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Notifications</h1></div>
+  {% if unread_notifications %}<form method="post">{{ csrf() }}<button class="btn secondary small" type="submit">Mark all as read</button></form>{% endif %}</div>
+<div class="card">
+{% if notifications %}
+<ul class="timeline">{% for n in notifications %}
+  <li>{% if not n.is_read %}<strong>{% endif %}
+    {% if n.order %}<a href="{{ url_for('admin.order_detail' if g.user.is_admin else 'customer.order_detail', order_id=n.order_id) }}">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}
+    {% if not n.is_read %}</strong>{% endif %}<div class="muted small">{{ n.created_at|dt }}</div></li>
+{% endfor %}</ul>
+{% else %}<p class="muted">No notifications.</p>{% endif %}
+</div>
+{% endblock %}

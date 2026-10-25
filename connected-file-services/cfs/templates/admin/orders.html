@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Orders</h1><p>Incoming and processed ECU files.</p></div></div>
+<form class="filters" method="get">
+  <div class="chips">
+  {% for key, label in [('open', 'Open'), ('submitted', 'Awaiting review'), ('in_progress', 'In progress'), ('completed', 'Completed'), ('rejected', 'Rejected'), ('all', 'All')] %}
+    <a class="chip {{ 'active' if status == key }}" href="{{ url_for('admin.orders', status=key, q=q or None) }}">{{ label }}</a>
+  {% endfor %}</div>
+  <input type="hidden" name="status" value="{{ status }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Reference, workshop, vehicle, HW or SW number" aria-label="Search">
+  <button class="btn secondary small" type="submit">Search</button>
+</form>
+<div class="card">
+{% if orders %}{% set now = None %}{% include "partials/admin_order_rows.html" %}{% else %}<p class="muted">No orders found.</p>{% endif %}
+</div>
+{% endblock %}

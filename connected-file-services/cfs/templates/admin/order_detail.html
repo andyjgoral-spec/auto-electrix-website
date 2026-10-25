@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, pill, progress %}
+{% block title %}{{ order.reference }}{% endblock %}
+{% block content %}
+{% set orig = order.original_file %}
+{% set current = order.current_completed_file %}
+<div class="page-head">
+  <div><div class="eyebrow"><a href="{{ url_for('admin.orders') }}">Orders</a> · <a href="{{ url_for('admin.workshop_detail', workshop_id=order.workshop_id) }}">{{ order.workshop.name }}</a></div>
+  <h1 class="mono">{{ order.reference }}</h1><p>{{ order.vehicle_make }} {{ order.vehicle_model }} · {{ order.service_requested }}</p></div>
+  {{ pill(order.status) }}
+</div>
+
+<div class="grid split">
+  <div class="stack">
+    {# ---- Step 1: review ---- #}
+    {% if order.status == 'submitted' %}
+    <section class="card">
+      <h2>Review this order</h2>
+      <p class="muted">Download the original and check the identifiers against the file in your calibration software before approving.</p>
+      <div class="grid split-even">
+        <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}">{{ csrf() }}
+          <input type="hidden" name="action" value="approve">
+          <button class="btn block" type="submit">Approve and start work</button></form>
+        <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}" data-confirm="Reject this order and refund the credit?">{{ csrf() }}
+          <input type="hidden" name="action" value="reject">
+          <div class="field"><label for="reason">Rejection reason (sent to the workshop)</label>
+            <textarea id="reason" name="reason" required minlength="5" placeholder="For example: read incomplete, identifiers do not match the file"></textarea></div>
+          <button class="btn danger block" type="submit">Reject and refund credit</button></form>
+      </div>
+    </section>
+    {% endif %}
+
+    {# ---- Step 2: deliver ---- #}
+    {% if order.status == 'in_progress' %}
+    <section class="card">
+      <h2>Deliver completed file</h2>
+      <p class="muted">Upload the file exported from your calibration software. It must be exactly {{ orig.size if orig else '—' }} bytes, the same size as the original.</p>
+      <form method="post" enctype="multipart/form-data" action="{{ url_for('admin.order_action', order_id=order.id) }}" data-once>{{ csrf() }}
+        <input type="hidden" name="action" value="deliver_upload">
+        <div class="dropzone" data-dropzone><strong>Completed file</strong><span class="hint" data-filename>Choose or drop the file</span>
+          <div class="mt"><input type="file" name="completed_file" required aria-label="Completed file"></div></div>
+        <div class="field mt"><label for="note">Revision note <span class="req">(optional, internal and shown in history)</span></label>
+          <input type="text" id="note" name="note" maxlength="255"></div>
+        <label class="check"><input type="checkbox" name="confirm" value="1" required>
+          <span>I have checked this file against the original, the vehicle and the ECU identifiers, and I approve it for delivery to the workshop.</span></label>
+        <button class="btn" type="submit">Approve and deliver</button>
+      </form>
+      <hr class="mt">
+      <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}" data-confirm="Reject this order and refund the credit?" class="mt">{{ csrf() }}
+        <input type="hidden" name="action" value="reject">
+        <details><summary class="small">Cannot complete this order? Reject it</summary>
+          <div class="field mt"><label for="reason2">Reason (sent to the workshop)</label><textarea id="reason2" name="reason" required></textarea></div>
+          <button class="btn danger small" type="submit">Reject and refund credit</button></details>
+      </form>
+    </section>
+    {% endif %}
+
+    {% if order.status == 'completed' %}
+    <section class="card">
+      <h2>Delivered</h2>
+      {% if current %}<p>Version {{ current.version }} delivered {{ current.created_at|dt }} and approved by {{ current.approved_by.name if current.approved_by else '—' }}. Downloaded {{ current.download_count }} time{{ 's' if current.download_count != 1 }}.</p>{% endif %}
+      <div class="grid split-even">
+        <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}">{{ csrf() }}
+          <input type="hidden" name="action" value="add_to_library">
+          <h3>Add to validated library</h3>
+          <p class="small muted">Stores this calibration against the exact original checksum so it can be offered for identical files in future, after a technician confirms.</p>
+          <div class="field"><label for="library_notes">Validation notes</label><textarea id="library_notes" name="library_notes" placeholder="How it was validated (road test, logs, dyno)"></textarea></div>
+          <label class="check"><input type="checkbox" name="confirm" value="1" required><span>This file has been validated on a vehicle and is suitable for re-use with an identical original.</span></label>
+          <button class="btn secondary" type="submit">Add to library</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}">{{ csrf() }}
+          <input type="hidden" name="action" value="reopen">
+          <h3>Issue a revision</h3>
+          <p class="small muted">Reopens the order so a new version can be delivered. Earlier versions are kept.</p>
+          <div class="field"><label for="reopen_reason">Reason</label><textarea id="reopen_reason" name="reason" required></textarea></div>
+          <button class="btn secondary" type="submit">Reopen for revision</button>
+        </form>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if order.status == 'rejected' %}
+    <section class="card"><h2>Rejected</h2><p>{{ order.rejection_reason }}</p><p class="small muted">{{ order.rejected_at|dt }} · credit refunded</p></section>
+    {% endif %}
+
+    {# ---- Library compatibility ---- #}
+    <section class="card">
+      <div class="card-head"><h2>Validated library check</h2><a class="small" href="{{ url_for('admin.library') }}">Library</a></div>
+      <p class="small muted">Only exact matches can be delivered: ECU manufacturer, hardware number, software number, original file size and original SHA-256 checksum must all match. Every delivery still needs a technician's approval.</p>
+      {% for lib in compat.exact %}
+        <div class="match">
+          <strong>Exact match · Library #{{ lib.id }} v{{ lib.version }}</strong> · {{ lib.service }}
+          <div class="small muted">{{ lib.vehicle_make }} {{ lib.vehicle_model }} · validated {{ lib.validated_at|dt('%d %b %Y') }} by {{ lib.validated_by.name }} · used {{ lib.times_used }}×</div>
+          {% if lib.service != order.service_requested %}<div class="small"><strong>Note:</strong> library service differs from the requested service ({{ order.service_requested }}).</div>{% endif %}
+          {% if order.status == 'in_progress' %}
+          <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}" class="mt">{{ csrf() }}
+            <input type="hidden" name="action" value="deliver_library"><input type="hidden" name="library_file_id" value="{{ lib.id }}">
+            <label class="check"><input type="checkbox" name="confirm" value="1" required><span>I have reviewed library file #{{ lib.id }} for this vehicle and order, and approve it for delivery.</span></label>
+            <button class="btn small" type="submit">Approve and deliver library file</button>
+          </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+      {% for lib, problems in compat.near %}
+        <div class="near"><strong>Not compatible · Library #{{ lib.id }} v{{ lib.version }}</strong> · {{ lib.service }}
+          <div class="small">{{ problems|join(', ')|capitalize }}. This file cannot be used for this order.</div></div>
+      {% endfor %}
+      {% if not compat.exact and not compat.near %}<p class="muted">No library files for this original.</p>{% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Internal notes</h2>
+      <form method="post" action="{{ url_for('admin.order_action', order_id=order.id) }}">{{ csrf() }}
+        <input type="hidden" name="action" value="notes">
+        <textarea name="admin_notes" aria-label="Internal notes" placeholder="Only visible to CAT staff">{{ order.admin_notes or '' }}</textarea>
+        <button class="btn secondary small mt" type="submit">Save notes</button></form>
+    </section>
+  </div>
+
+  <div class="stack">
+    <section class="card">
+      <h2>Files</h2>
+      {% if orig %}
+        <h3 class="mt">Original</h3>
+        <dl class="dl small"><dt>File</dt><dd>{{ orig.filename }}</dd><dt>Size</dt><dd>{{ orig.size|filesize }} ({{ '{:,}'.format(orig.size) }} bytes)</dd>
+          <dt>SHA-256</dt><dd class="mono break">{{ orig.sha256 }}</dd><dt>Uploaded</dt><dd>{{ orig.created_at|dt }}</dd></dl>
+        <a class="btn block mt" href="{{ url_for('admin.download_file', file_id=orig.id) }}">Download original</a>
+      {% endif %}
+      {% for f in order.completed_files|reverse %}
+        <h3 class="mt">Completed v{{ f.version }} {% if f.is_current %}<span class="pill completed">current</span>{% endif %}</h3>
+        <dl class="dl small"><dt>Size</dt><dd>{{ f.size|filesize }}</dd><dt>SHA-256</dt><dd class="mono break">{{ f.sha256 }}</dd>
+          <dt>Approved by</dt><dd>{{ f.approved_by.name if f.approved_by else '—' }}</dd><dt>Delivered</dt><dd>{{ f.created_at|dt }}</dd>
+          {% if f.library_file_id %}<dt>Source</dt><dd><a href="{{ url_for('admin.library_detail', entry_id=f.library_file_id) }}">Library #{{ f.library_file_id }}</a></dd>{% endif %}
+          {% if f.note %}<dt>Note</dt><dd>{{ f.note }}</dd>{% endif %}
+          <dt>Downloads</dt><dd>{{ f.download_count }}</dd></dl>
+        <a class="small" href="{{ url_for('admin.download_file', file_id=f.id) }}">Download v{{ f.version }}</a>
+      {% endfor %}
+    </section>
+    <section class="card">
+      <h2>Vehicle &amp; ECU</h2>
+      <dl class="dl small">
+        <dt>Vehicle</dt><dd>{{ order.vehicle_make }} {{ order.vehicle_model }} {{ order.vehicle_year or '' }}</dd>
+        <dt>Engine</dt><dd>{{ order.engine or '—' }}</dd><dt>Reg</dt><dd>{{ order.registration or '—' }}</dd>
+        <dt>VIN</dt><dd class="mono">{{ order.vin or '—' }}</dd>
+        <dt>ECU</dt><dd>{{ order.ecu_manufacturer }} {{ order.ecu_model }}</dd>
+        <dt>Hardware</dt><dd class="mono">{{ order.hardware_number }}</dd><dt>Software</dt><dd class="mono">{{ order.software_number }}</dd>
+        <dt>Read</dt><dd>{{ order.read_tool or '—' }}{% if order.read_method %} ({{ order.read_method }}){% endif %}</dd>
+        <dt>Notes</dt><dd>{{ order.customer_notes or '—' }}</dd>
+        <dt>Declaration</dt><dd>{{ 'Accepted' if order.declaration_accepted else 'Not accepted' }}</dd>
+        <dt>Submitted by</dt><dd>{{ order.submitted_by.name }}<br><span class="muted">{{ order.submitted_by.email }}</span></dd>
+      </dl>
+    </section>
+    {% if same_original %}
+    <section class="card"><h2>Same original seen before</h2>
+      <p class="small muted">Other orders with a byte-identical original file.</p>
+      <ul>{% for o in same_original %}<li><a class="mono" href="{{ url_for('admin.order_detail', order_id=o.id) }}">{{ o.reference }}</a> · {{ o.workshop.name }} · {{ pill(o.status) }}</li>{% endfor %}</ul>
+    </section>{% endif %}
+    <section class="card"><h2>Audit trail</h2>
+      <ul class="timeline">{% for a in history %}
+        <li><span class="mono small">{{ a.action }}</span><div class="muted small">{{ a.created_at|dt }} · {{ a.actor_email }}</div></li>
+      {% endfor %}</ul></section>
+  </div>
+</div>
+{% endblock %}

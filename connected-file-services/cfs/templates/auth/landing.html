@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block full %}
+<div class="auth-wrap">
+  {% include "partials/hero.html" %}
+  <section class="auth-form">
+    <div class="card stack">
+      <div><div class="eyebrow">Workshop portal</div><h2>Get started</h2>
+      <p class="muted">Sign in to your workshop account, or register to start sending files.</p></div>
+      <a class="btn block" href="{{ url_for('auth.login') }}">Sign in</a>
+      <a class="btn secondary block" href="{{ url_for('auth.register') }}">Register a workshop</a>
+      <div>
+        <h3>Pricing</h3>
+        <table><tbody>
+          <tr><td>Single file</td><td class="num">£70 + VAT</td></tr>
+          <tr><td>5+1 package (6 credits)</td><td class="num">£350 + VAT</td></tr>
+          <tr><td>10+2 package (12 credits)</td><td class="num">£700 + VAT</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

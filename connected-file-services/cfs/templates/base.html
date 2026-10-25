@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>{% block title %}{% endblock %}{% if self.title() %} · {% endif %}Connected File Services</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% set ep = request.endpoint or '' %}
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ url_for('auth.index') }}">
+      {% include "partials/logo.html" %}
+      <span class="brand-text"><strong>Connected File Services</strong><span>Connected Automotive Technologies</span></span>
+    </a>
+    {% if g.user %}
+      {% if g.user.is_admin %}
+        {% set links = [('admin.dashboard', 'Overview', 'admin.dashboard'), ('admin.orders', 'Orders', 'admin.order'), ('admin.workshops', 'Workshops', 'admin.workshop'), ('admin.library', 'Library', 'admin.library'), ('admin.reports', 'Reports', 'admin.reports'), ('admin.pricing', 'Pricing', 'admin.pricing'), ('admin.audit_log', 'Audit', 'admin.audit')] %}
+      {% else %}
+        {% set links = [('customer.dashboard', 'Dashboard', 'customer.dashboard'), ('customer.upload', 'Upload file', 'customer.upload'), ('customer.orders', 'Orders', 'customer.order'), ('customer.credits', 'Credits', 'payments.'), ('customer.invoices', 'Invoices', 'customer.invoice')] %}
+      {% endif %}
+      <nav class="nav" aria-label="Main">
+        {% for endpoint, label, prefix in links %}<a href="{{ url_for(endpoint) }}" class="{{ 'active' if ep == endpoint or ep.startswith(prefix) }}">{{ label }}</a>{% endfor %}
+        <a href="{{ url_for('customer.notifications') }}" class="{{ 'active' if ep == 'customer.notifications' }}" aria-label="Notifications">Alerts{% if unread_notifications %}<span class="badge-dot">{{ unread_notifications }}</span>{% endif %}</a>
+        <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+      </nav>
+      <details class="menu">
+        <summary aria-label="Menu">{% if unread_notifications %}<span class="badge-dot">{{ unread_notifications }}</span>{% endif %}
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        </summary>
+        <div class="menu-panel">
+          {% for endpoint, label, prefix in links %}<a href="{{ url_for(endpoint) }}" class="{{ 'active' if ep == endpoint or ep.startswith(prefix) }}">{{ label }}</a>{% endfor %}
+          <a href="{{ url_for('customer.notifications') }}">Alerts{% if unread_notifications %} ({{ unread_notifications }}){% endif %}</a>
+          <hr>
+          {% if not g.user.is_admin %}<a href="{{ url_for('customer.account') }}">Workshop details</a>{% endif %}
+          <a href="{{ url_for('auth.change_password') }}">Change password</a>
+          <form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+        </div>
+      </details>
+    {% else %}
+      <nav class="nav nav-public"><a href="{{ url_for('auth.login') }}">Sign in</a><a href="{{ url_for('auth.register') }}">Register</a></nav>
+    {% endif %}
+  </div>
+</header>
+{% if g.user %}
+<div class="subbar"><div class="subbar-inner">
+  <span>{{ g.user.name }}{% if g.user.workshop %} · {{ g.user.workshop.name }}{% endif %}{% if g.user.is_admin %} · CAT administrator{% endif %}</span>
+  <span class="nowrap">{% if g.user.workshop %}<a href="{{ url_for('customer.account') }}">Account</a> · {% endif %}<a href="{{ url_for('auth.change_password') }}">Password</a></span>
+</div></div>
+{% endif %}
+{% block full %}
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<ul class="flashes" role="status">{% for cat, msg in messages %}<li class="flash {{ cat }}">{{ msg }}</li>{% endfor %}</ul>{% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+{% endblock %}
+<footer class="site"><div>
+  <span>© Connected Automotive Technologies · Connected File Services</span>
+  <span>Files are stored privately and only released after review by CAT staff.</span>
+</div></footer>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro pill(status, label=None) %}<span class="pill {{ status }}">{{ label or status_labels.get(status, status|replace('_', ' ')|capitalize) }}</span>{% endmacro %}
+
+{% macro field(name, label, value='', type='text', required=False, hint=None, attrs='') %}
+<div class="field">
+  <label for="{{ name }}">{{ label }}{% if not required %} <span class="req">(optional)</span>{% endif %}</label>
+  <input type="{{ type }}" id="{{ name }}" name="{{ name }}" value="{{ value or '' }}" {% if required %}required{% endif %} {{ attrs|safe }}>
+  {% if hint %}<span class="hint">{{ hint }}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro progress(order) %}
+{% set step = {'submitted': 1, 'in_progress': 2, 'completed': 3}.get(order.status, 0) %}
+<div class="progress" aria-hidden="true">
+  <div class="{{ 'done' if step >= 1 }}"></div><div class="{{ 'done' if step >= 2 }}"></div><div class="{{ 'done' if step >= 3 }}"></div>
+</div>
+<div class="progress-labels"><span>Submitted</span><span>In progress</span><span>Ready</span></div>
+{% endmacro %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+{% include "partials/pending_notice.html" %}
+<div class="page-head">
+  <div><div class="eyebrow">{{ ws.name }}</div><h1>Dashboard</h1></div>
+  {% if ws.is_active %}<a class="btn" href="{{ url_for('customer.upload') }}">Upload ECU file</a>{% endif %}
+</div>
+<div class="grid grid-3">
+  <div class="card dark stat">
+    <span class="stat-label">File credits</span>
+    <span class="stat-value">{{ ws.credit_balance }}</span>
+    <span class="stat-foot muted">1 credit = 1 file service · <a href="{{ url_for('customer.credits') }}">Buy credits</a></span>
+  </div>
+  <a class="card stat" href="{{ url_for('customer.orders', status='active') }}">
+    <span class="stat-label">Active orders</span>
+    <span class="stat-value">{{ active_count }}</span>
+    <span class="stat-foot">Awaiting review or in progress</span>
+  </a>
+  <a class="card stat" href="{{ url_for('customer.orders', status='completed') }}">
+    <span class="stat-label">Completed</span>
+    <span class="stat-value">{{ completed_count }}</span>
+    <span class="stat-foot">Ready to download</span>
+  </a>
+</div>
+<div class="grid split mt">
+  <section class="card">
+    <div class="card-head"><h2>Recent orders</h2><a class="small" href="{{ url_for('customer.orders') }}">All orders</a></div>
+    {% if recent %}
+    <div class="table-wrap"><table class="responsive">
+      <thead><tr><th>Reference</th><th>Vehicle</th><th>Service</th><th>Status</th><th>Submitted</th></tr></thead>
+      <tbody>
+      {% for o in recent %}
+        <tr data-href="{{ url_for('customer.order_detail', order_id=o.id) }}">
+          <td data-label="Reference"><a class="mono" href="{{ url_for('customer.order_detail', order_id=o.id) }}">{{ o.reference }}</a></td>
+          <td data-label="Vehicle">{{ o.vehicle_make }} {{ o.vehicle_model }}</td>
+          <td data-label="Service">{{ o.service_requested }}</td>
+          <td data-label="Status">{{ pill(o.status) }}</td>
+          <td data-label="Submitted" class="nowrap">{{ o.created_at|dt('%d %b %Y') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody></table></div>
+    {% else %}
+      <p class="muted">No orders yet.{% if ws.is_active and ws.credit_balance %} <a href="{{ url_for('customer.upload') }}">Upload your first file</a>.{% endif %}</p>
+    {% endif %}
+  </section>
+  <section class="card">
+    <div class="card-head"><h2>Notifications</h2><a class="small" href="{{ url_for('customer.notifications') }}">All</a></div>
+    {% if notifications %}
+    <ul class="timeline">
+      {% for n in notifications %}
+        <li>{% if not n.is_read %}<strong>{% endif %}{% if n.order %}<a href="{{ url_for('customer.order_detail', order_id=n.order_id) }}">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}{% if not n.is_read %}</strong>{% endif %}
+          <div class="muted small">{{ n.created_at|dt }}</div></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted">Nothing new.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}

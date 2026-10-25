@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Invoices{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Invoices</h1><p>VAT invoices for credit purchases.</p></div></div>
+<div class="card">
+{% if invoices %}
+<div class="table-wrap"><table class="responsive">
+  <thead><tr><th>Invoice</th><th>Date</th><th>Description</th><th class="num">Net</th><th class="num">VAT</th><th class="num">Total</th></tr></thead>
+  <tbody>{% for i in invoices %}
+    <tr data-href="{{ url_for('customer.invoice_detail', invoice_id=i.id) }}">
+      <td data-label="Invoice"><a class="mono" href="{{ url_for('customer.invoice_detail', invoice_id=i.id) }}">{{ i.number }}</a></td>
+      <td data-label="Date" class="nowrap">{{ i.issued_at|dt('%d %b %Y') }}</td>
+      <td data-label="Description">{{ i.description }}</td>
+      <td data-label="Net" class="num">{{ i.net_pence|money }}</td><td data-label="VAT" class="num">{{ i.vat_pence|money }}</td>
+      <td data-label="Total" class="num"><strong>{{ i.gross_pence|money }}</strong></td></tr>
+  {% endfor %}</tbody></table></div>
+{% else %}<p class="muted">No invoices yet.</p>{% endif %}
+</div>
+{% endblock %}

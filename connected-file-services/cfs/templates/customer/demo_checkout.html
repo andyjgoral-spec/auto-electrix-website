@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf %}
+{% block title %}Demo checkout{% endblock %}
+{% block content %}
+<div class="card invoice">
+  <div class="eyebrow">Demonstration checkout</div>
+  <h1>{{ payment.package_name }}</h1>
+  <p class="muted">Stripe is not configured, so this page stands in for Stripe Checkout. No card details are collected and no money is taken.</p>
+  <dl class="dl"><dt>Credits</dt><dd>{{ payment.credits }}</dd><dt>Net</dt><dd>{{ payment.net_pence|money }}</dd>
+    <dt>VAT {{ payment.vat_rate_bp|pct }}</dt><dd>{{ payment.vat_pence|money }}</dd><dt><strong>Total</strong></dt><dd><strong>{{ payment.gross_pence|money }}</strong></dd></dl>
+  {% if payment.status == 'pending' %}
+  <form method="post" class="btn-row mt">{{ csrf() }}
+    <button class="btn" name="action" value="pay" type="submit">Complete demo payment</button>
+    <button class="btn ghost" name="action" value="cancel" type="submit">Cancel</button></form>
+  {% else %}<p class="mt">This payment is {{ payment.status }}.</p>{% endif %}
+</div>
+{% endblock %}

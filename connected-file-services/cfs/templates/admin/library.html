@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, pill, field %}
+{% block title %}Validated library{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Validated file library</h1>
+  <p>Calibrations validated by CAT, each tied to the exact original file it was built from.</p></div></div>
+<form class="filters" method="get">
+  <div class="chips"><a class="chip {{ 'active' if show != 'all' }}" href="{{ url_for('admin.library', q=q or None) }}">Validated</a>
+    <a class="chip {{ 'active' if show == 'all' }}" href="{{ url_for('admin.library', show='all', q=q or None) }}">Include retired</a></div>
+  {% if show == 'all' %}<input type="hidden" name="show" value="all">{% endif %}
+  <input type="search" name="q" value="{{ q }}" placeholder="Vehicle, ECU, HW/SW number or checksum" aria-label="Search library">
+  <button class="btn secondary small" type="submit">Search</button>
+</form>
+<div class="card">
+{% if entries %}
+<div class="table-wrap"><table class="responsive">
+  <thead><tr><th>#</th><th>Vehicle</th><th>ECU · HW / SW</th><th>Service</th><th class="num">Version</th><th>Status</th><th class="num">Used</th><th>Validated</th></tr></thead>
+  <tbody>{% for e in entries %}
+    <tr data-href="{{ url_for('admin.library_detail', entry_id=e.id) }}">
+      <td data-label="#"><a class="mono" href="{{ url_for('admin.library_detail', entry_id=e.id) }}">LIB{{ e.id }}</a></td>
+      <td data-label="Vehicle">{{ e.vehicle_make }} {{ e.vehicle_model }}</td>
+      <td data-label="ECU">{{ e.ecu_manufacturer }} {{ e.ecu_model }}<div class="mono small muted">{{ e.hardware_number }} / {{ e.software_number }}</div></td>
+      <td data-label="Service">{{ e.service }}</td><td data-label="Version" class="num">v{{ e.version }}</td><td data-label="Status">{{ pill(e.status) }}</td>
+      <td data-label="Used" class="num">{{ e.times_used }}</td><td data-label="Validated" class="nowrap">{{ e.validated_at|dt('%d %b %Y') }}</td></tr>
+  {% endfor %}</tbody></table></div>
+{% else %}<p class="muted">No library entries found.</p>{% endif %}
+</div>
+<details class="card mt">
+  <summary><strong>Add a validated file manually</strong> <span class="muted small">(usually done from a completed order instead)</span></summary>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('admin.library_new') }}" class="mt" data-once>{{ csrf() }}
+    <div class="form-grid">
+      {{ field('vehicle_make', 'Vehicle make', required=True) }}{{ field('vehicle_model', 'Vehicle model', required=True) }}
+      {{ field('engine', 'Engine') }}{{ field('ecu_manufacturer', 'ECU manufacturer', required=True) }}
+      {{ field('ecu_model', 'ECU model', required=True) }}{{ field('hardware_number', 'Hardware number', required=True) }}
+      {{ field('software_number', 'Software number', required=True) }}
+      <div class="field"><label for="service">Service</label><select id="service" name="service" required>
+        {% for s in services %}<option>{{ s.name }}</option>{% endfor %}</select></div>
+      <div class="field"><label for="original_file">Unmodified original</label><input type="file" id="original_file" name="original_file" required>
+        <span class="hint">Used only to record its size and SHA-256 fingerprint for exact matching.</span></div>
+      <div class="field"><label for="calibrated_file">Validated calibration file</label><input type="file" id="calibrated_file" name="calibrated_file" required></div>
+      <div class="field full"><label for="notes">Validation notes</label><textarea id="notes" name="notes"></textarea></div>
+    </div>
+    <label class="check"><input type="checkbox" name="confirm" value="1" required><span>This calibration has been validated by CAT staff for the original file above.</span></label>
+    <button class="btn" type="submit">Add to library</button>
+  </form>
+</details>
+{% endblock %}

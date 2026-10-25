@@ -1,0 +1,5 @@
+{% if ws and ws.status == 'pending' %}
+<div class="notice warn"><strong>Your account is awaiting verification.</strong> CAT will check your workshop details shortly. You can look around, but buying credits and uploading files will be available once your account is active.</div>
+{% elif ws and ws.status == 'suspended' %}
+<div class="notice warn"><strong>Your account is suspended.</strong> Please contact Connected Automotive Technologies.</div>
+{% endif %}

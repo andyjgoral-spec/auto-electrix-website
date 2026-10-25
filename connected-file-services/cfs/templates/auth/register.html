@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, field %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">New account</div><h1>Register your workshop</h1>
+<p>CAT verifies each workshop before the first file is accepted. This usually happens within one working day.</p></div></div>
+<form method="post" class="card" novalidate>
+  {{ csrf() }}
+  <fieldset><legend><span class="step-num">1</span> Workshop</legend>
+  <div class="form-grid">
+    <div class="full">{{ field('workshop_name', 'Workshop or business name', form.workshop_name, required=True, attrs='autocomplete="organization"') }}</div>
+    {{ field('contact_name', 'Your name', form.contact_name, required=True, attrs='autocomplete="name"') }}
+    {{ field('phone', 'Phone', form.phone, type='tel', required=True, attrs='autocomplete="tel"') }}
+    <div class="full">{{ field('address', 'Address', form.address, required=True, attrs='autocomplete="street-address"') }}</div>
+    {{ field('city', 'Town or city', form.city, required=True, attrs='autocomplete="address-level2"') }}
+    {{ field('postcode', 'Postcode', form.postcode, required=True, attrs='autocomplete="postal-code"') }}
+    {{ field('country', 'Country', form.country, required=True, attrs='autocomplete="country-name"') }}
+    {{ field('vat_number', 'VAT number', form.vat_number, hint='Shown on your invoices.') }}
+  </div></fieldset>
+  <fieldset><legend><span class="step-num">2</span> Sign-in details</legend>
+  <div class="form-grid">
+    <div class="full">{{ field('email', 'Email', form.email, type='email', required=True, attrs='autocomplete="email"') }}</div>
+    {{ field('password', 'Password', type='password', required=True, hint='At least 10 characters, with letters and numbers.', attrs='autocomplete="new-password"') }}
+    {{ field('password_confirm', 'Confirm password', type='password', required=True, attrs='autocomplete="new-password"') }}
+  </div></fieldset>
+  <label class="check"><input type="checkbox" name="terms" value="1" {% if form.terms %}checked{% endif %}>
+    <span>I agree to the CAT terms of service. I understand that calibration files are supplied for vehicles I am authorised to work on, and that I am responsible for any use that must comply with road, emissions and type-approval law.</span></label>
+  <div class="btn-row"><button class="btn" type="submit">Create account</button><a class="btn ghost" href="{{ url_for('auth.login') }}">I already have an account</a></div>
+</form>
+{% endblock %}

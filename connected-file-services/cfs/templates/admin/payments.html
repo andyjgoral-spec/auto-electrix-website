@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}Payments{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow"><a href="{{ url_for('admin.reports') }}">Reports</a></div><h1>Payments</h1></div></div>
+<div class="card"><div class="table-wrap"><table class="responsive">
+  <thead><tr><th>Date</th><th>Workshop</th><th>Package</th><th>Provider</th><th>Status</th><th class="num">Net</th><th class="num">Gross</th><th>Stripe ref.</th></tr></thead>
+  <tbody>{% for p in payments %}
+    <tr><td data-label="Date" class="nowrap">{{ p.created_at|dt }}</td>
+      <td data-label="Workshop"><a href="{{ url_for('admin.workshop_detail', workshop_id=p.workshop_id) }}">{{ p.workshop.name }}</a></td>
+      <td data-label="Package">{{ p.package_name }}</td><td data-label="Provider">{{ p.provider }}</td><td data-label="Status">{{ pill(p.status) }}</td>
+      <td data-label="Net" class="num">{{ p.net_pence|money }}</td><td data-label="Gross" class="num">{{ p.gross_pence|money }}</td>
+      <td data-label="Stripe" class="mono small break">{{ p.stripe_payment_intent or p.stripe_session_id or '—' }}</td></tr>
+  {% else %}<tr><td colspan="8" class="muted">No payments.</td></tr>{% endfor %}</tbody></table></div></div>
+{% endblock %}

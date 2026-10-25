@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf %}
+{% block title %}Pricing &amp; settings{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Pricing &amp; settings</h1><p>Changes apply to new purchases only. Existing invoices never change.</p></div></div>
+<section class="card">
+  <h2>Credit packages</h2>
+  <p class="small muted">Prices are entered excluding VAT.</p>
+  {% for p in packages + [None] %}
+  <form method="post" class="form-grid card mt">{{ csrf() }}
+    <input type="hidden" name="action" value="save_package">{% if p %}<input type="hidden" name="package_id" value="{{ p.id }}">{% endif %}
+    <div class="full"><h3>{{ p.name if p else 'Add a package' }}</h3></div>
+    <div class="field"><label>Name</label><input type="text" name="name" value="{{ p.name if p else '' }}" required></div>
+    <div class="field"><label>Description</label><input type="text" name="description" value="{{ p.description or '' if p else '' }}"></div>
+    <div class="field"><label>Price excl. VAT (£)</label><input type="text" inputmode="decimal" name="price" value="{{ '%.2f'|format(p.price_pence / 100) if p else '' }}" required></div>
+    <div class="field"><label>Credits</label><input type="number" name="credits" min="1" step="1" value="{{ p.credits if p else '' }}" required></div>
+    <div class="field"><label>Display order</label><input type="number" name="sort_order" step="1" value="{{ p.sort_order if p else 0 }}"></div>
+    <label class="check"><input type="checkbox" name="active" value="1" {% if not p or p.active %}checked{% endif %}><span>Available to buy</span></label>
+    <div class="full"><button class="btn {{ 'secondary' if p }} small" type="submit">{{ 'Save' if p else 'Add package' }}</button></div>
+  </form>
+  {% endfor %}
+</section>
+<div class="grid split-even mt">
+  <section class="card">
+    <h2>Settings</h2>
+    <form method="post">{{ csrf() }}<input type="hidden" name="action" value="save_settings">
+      <div class="field"><label for="vat_rate">VAT rate (%)</label><input type="number" id="vat_rate" name="vat_rate" step="0.01" min="0" max="50" value="{{ '%g'|format(vat_rate) }}" required></div>
+      <div class="field"><label for="tat">Turnaround target (hours)</label><input type="number" id="tat" name="turnaround_target_hours" step="0.5" min="0.5" value="{{ target }}" required></div>
+      <label class="check"><input type="checkbox" name="require_account_approval" value="1" {% if require_approval %}checked{% endif %}><span>New workshops must be verified by CAT before buying credits or uploading</span></label>
+      <button class="btn secondary" type="submit">Save settings</button></form>
+  </section>
+  <section class="card">
+    <h2>Services offered</h2>
+    <p class="small muted">The list workshops choose from when uploading.</p>
+    {% for s in services + [None] %}
+    <form method="post" class="filters">{{ csrf() }}<input type="hidden" name="action" value="save_service">
+      {% if s %}<input type="hidden" name="service_id" value="{{ s.id }}">{% endif %}
+      <input type="text" name="name" value="{{ s.name if s else '' }}" placeholder="New service" aria-label="Service name" required>
+      <input type="number" name="sort_order" value="{{ s.sort_order if s else 99 }}" aria-label="Order" class="narrow">
+      <label class="check"><input type="checkbox" name="active" value="1" {% if not s or s.active %}checked{% endif %}><span>Active</span></label>
+      <button class="btn secondary small" type="submit">{{ 'Save' if s else 'Add' }}</button>
+    </form>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

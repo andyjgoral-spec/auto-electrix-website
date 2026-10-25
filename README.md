@@ -91,3 +91,7 @@ Email Routing must be turned on for the domain.
 - [ ] Turn on Email Routing, set TO_ADDRESS and FROM_ADDRESS, and test all 5 forms
 - [ ] Add the new site to Google Search Console and submit `/sitemap.xml`
 - [ ] Optional: add Google Analytics with your own ID. If you do, update `src/pages/cookie-policy.html` and add a cookie banner first.
+
+## Connected File Services
+
+The ECU file-processing portal is a separate app in [`connected-file-services/`](connected-file-services/README.md). It is not part of the website build.

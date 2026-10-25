@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Reports</h1><p>Sales, revenue, file volumes and turnaround.</p></div>
+  <div class="chips">{% for m in [3, 6, 12] %}<a class="chip {{ 'active' if months == m }}" href="{{ url_for('admin.reports', months=m) }}">{{ m }} months</a>{% endfor %}</div></div>
+<div class="grid grid-4">
+  <div class="card dark stat"><span class="stat-label">Revenue (net)</span><span class="stat-value">{{ totals.net|money }}</span><span class="stat-foot muted">{{ totals.gross|money }} incl. VAT</span></div>
+  <div class="card stat"><span class="stat-label">Credits sold</span><span class="stat-value">{{ totals.credits }}</span><span class="stat-foot">{{ credits_outstanding }} unused across all workshops</span></div>
+  <div class="card stat"><span class="stat-label">Files received</span><span class="stat-value">{{ totals.orders }}</span><span class="stat-foot">{{ totals.completed }} completed</span></div>
+  <div class="card stat"><span class="stat-label">Avg turnaround</span><span class="stat-value">{{ totals.avg_tat|hours }}</span><span class="stat-foot">Target {{ target_hours|hours }}</span></div>
+</div>
+<section class="card mt">
+  <h2>By month</h2>
+  <div class="table-wrap"><table class="responsive">
+    <thead><tr><th>Month</th><th>Revenue (net)</th><th class="num">Payments</th><th class="num">Credits sold</th><th class="num">Files in</th><th class="num">Completed</th><th class="num">Avg turnaround</th></tr></thead>
+    <tbody>{% for key, s in rows %}
+      <tr><td data-label="Month" class="nowrap">{{ key }}</td>
+        <td data-label="Revenue"><div class="nowrap">{{ s.net|money }}</div>
+          <svg class="bar-svg" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><rect width="100" height="8" fill="#ececec"/><rect width="{{ (100 * s.net / max_net)|round(1) }}" height="8" fill="#0a0a0a"/></svg></td>
+        <td data-label="Payments" class="num">{{ s.payments }}</td><td data-label="Credits" class="num">{{ s.credits }}</td>
+        <td data-label="Files in" class="num">{{ s.orders }}</td><td data-label="Completed" class="num">{{ s.completed }}</td>
+        <td data-label="Turnaround" class="num">{{ s.avg_tat|hours }}</td></tr>
+    {% endfor %}</tbody></table></div>
+</section>
+<div class="grid grid-3 mt">
+  <section class="card"><h2>Top workshops</h2>
+    <table><tbody>{% for name, n in top_workshops %}<tr><td>{{ name }}</td><td class="num">{{ n }}</td></tr>{% else %}<tr><td class="muted">No data</td></tr>{% endfor %}</tbody></table></section>
+  <section class="card"><h2>By service</h2>
+    <table><tbody>{% for name, n in by_service %}<tr><td>{{ name }}</td><td class="num">{{ n }}</td></tr>{% else %}<tr><td class="muted">No data</td></tr>{% endfor %}</tbody></table></section>
+  <section class="card"><h2>By ECU manufacturer</h2>
+    <table><tbody>{% for name, n in by_ecu %}<tr><td>{{ name }}</td><td class="num">{{ n }}</td></tr>{% else %}<tr><td class="muted">No data</td></tr>{% endfor %}</tbody></table></section>
+</div>
+<p class="mt"><a href="{{ url_for('admin.payments') }}">All payments</a> · <a href="{{ url_for('admin.invoices') }}">All invoices</a></p>
+{% endblock %}

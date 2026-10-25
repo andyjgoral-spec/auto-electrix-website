@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, pill %}
+{% block title %}{{ ws.name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow"><a href="{{ url_for('admin.workshops') }}">Workshops</a></div><h1>{{ ws.name }}</h1>
+  <p>{{ ws.contact_name }} · {{ ws.city }}, {{ ws.country }}</p></div>{{ pill(ws.status) }}</div>
+<div class="grid split">
+  <div class="stack">
+    <section class="card">
+      <h2>Orders</h2>
+      {% if ws.orders %}{% with orders=ws.orders[:25], now=None %}{% include "partials/admin_order_rows.html" %}{% endwith %}
+      {% else %}<p class="muted">No orders.</p>{% endif %}
+    </section>
+    <section class="card">
+      <h2>Credit ledger</h2>
+      <div class="table-wrap"><table class="responsive">
+        <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>By</th><th class="num">Change</th><th class="num">Balance</th></tr></thead>
+        <tbody>{% for t in ledger %}
+          <tr><td data-label="Date" class="nowrap">{{ t.created_at|dt }}</td><td data-label="Type">{{ t.kind }}</td><td data-label="Description">{{ t.reason }}</td>
+          <td data-label="By">{{ t.created_by.name if t.created_by else 'System' }}</td>
+          <td data-label="Change" class="num">{{ '%+d'|format(t.delta) }}</td><td data-label="Balance" class="num">{{ t.balance_after }}</td></tr>
+        {% else %}<tr><td colspan="6" class="muted">No credit activity.</td></tr>{% endfor %}</tbody></table></div>
+    </section>
+    <section class="card">
+      <h2>Payments</h2>
+      <div class="table-wrap"><table class="responsive">
+        <thead><tr><th>Date</th><th>Package</th><th>Provider</th><th>Status</th><th class="num">Gross</th><th>Invoice</th></tr></thead>
+        <tbody>{% for p in payments %}
+          <tr><td data-label="Date" class="nowrap">{{ p.created_at|dt }}</td><td data-label="Package">{{ p.package_name }}</td><td data-label="Provider">{{ p.provider }}</td>
+          <td data-label="Status">{{ pill(p.status) }}</td><td data-label="Gross" class="num">{{ p.gross_pence|money }}</td>
+          <td data-label="Invoice">{% if p.invoice %}<a class="mono" href="{{ url_for('customer.invoice_detail', invoice_id=p.invoice.id) }}">{{ p.invoice.number }}</a>{% else %}—{% endif %}</td></tr>
+        {% else %}<tr><td colspan="6" class="muted">No payments.</td></tr>{% endfor %}</tbody></table></div>
+    </section>
+  </div>
+  <div class="stack">
+    <section class="card dark stat"><span class="stat-label">Credit balance</span><span class="stat-value">{{ ws.credit_balance }}</span></section>
+    <section class="card">
+      <h2>Account status</h2>
+      <form method="post" class="btn-row">{{ csrf() }}
+        {% if ws.status != 'active' %}<button class="btn" name="action" value="activate" type="submit">{{ 'Verify and activate' if ws.status == 'pending' else 'Reactivate' }}</button>{% endif %}
+        {% if ws.status != 'suspended' %}<button class="btn danger" name="action" value="suspend" type="submit">Suspend</button>{% endif %}
+      </form>
+    </section>
+    <section class="card">
+      <h2>Adjust credits</h2>
+      <form method="post">{{ csrf() }}<input type="hidden" name="action" value="adjust_credits">
+        <div class="field"><label for="delta">Credits to add or remove</label><input type="number" id="delta" name="delta" step="1" placeholder="e.g. 2 or -1" required></div>
+        <div class="field"><label for="creason">Reason (recorded in the audit log)</label><input type="text" id="creason" name="reason" required minlength="5" maxlength="200"></div>
+        <button class="btn secondary" type="submit">Apply adjustment</button></form>
+    </section>
+    <section class="card">
+      <h2>Details</h2>
+      <dl class="dl small"><dt>Phone</dt><dd>{{ ws.phone or '—' }}</dd><dt>Address</dt><dd>{{ ws.address }}, {{ ws.city }} {{ ws.postcode }}</dd>
+        <dt>VAT no.</dt><dd>{{ ws.vat_number or '—' }}</dd><dt>Joined</dt><dd>{{ ws.created_at|dt }}</dd></dl>
+    </section>
+    <section class="card">
+      <h2>Users</h2>
+      {% for u in ws.users %}
+        <div class="mt"><strong>{{ u.name }}</strong> {% if not u.is_enabled %}<span class="pill suspended">disabled</span>{% endif %}<br>
+          <span class="small muted">{{ u.email }} · last sign-in {{ u.last_login_at|dt }}</span>
+          <form method="post" class="mt">{{ csrf() }}<input type="hidden" name="user_id" value="{{ u.id }}">
+            {% if u.is_enabled %}<button class="btn danger small" name="action" value="disable_user" type="submit">Disable sign-in</button>
+            {% else %}<button class="btn secondary small" name="action" value="enable_user" type="submit">Enable sign-in</button>{% endif %}</form></div>
+      {% endfor %}
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill, progress %}
+{% block title %}{{ order.reference }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><div class="eyebrow"><a href="{{ url_for('customer.orders') }}">Orders</a></div>
+  <h1 class="mono">{{ order.reference }}</h1><p>{{ order.vehicle_make }} {{ order.vehicle_model }} · {{ order.service_requested }}</p></div>
+  {{ pill(order.status) }}
+</div>
+<div class="grid split">
+  <div class="stack">
+    <section class="card">
+      {% if order.status == 'rejected' %}
+        <h2>Order rejected</h2>
+        <p>{{ order.rejection_reason }}</p>
+        <p class="muted small">Your file credit was returned on {{ order.rejected_at|dt }}.</p>
+      {% else %}
+        {{ progress(order) }}
+        {% set current = order.current_completed_file %}
+        {% if order.status == 'completed' and current %}
+          <h2 class="mt">Your file is ready</h2>
+          <p class="muted">Checked and approved by CAT. Version {{ current.version }}, {{ current.size|filesize }}.</p>
+          <dl class="dl"><dt>SHA-256</dt><dd class="mono small break">{{ current.sha256 }}</dd></dl>
+          <p class="mt"><a class="btn" href="{{ url_for('customer.download', file_id=current.id) }}">Download completed file</a></p>
+          <p class="small muted">Before writing, confirm the file matches the vehicle and ECU above. Keep your original read as a backup.</p>
+        {% elif order.status == 'in_progress' %}
+          <h2 class="mt">Being worked on</h2><p class="muted">A CAT technician accepted this order on {{ order.approved_at|dt }}. You will be notified when the file is ready.</p>
+        {% else %}
+          <h2 class="mt">Awaiting review</h2><p class="muted">CAT will check the file and identifiers before starting work.</p>
+        {% endif %}
+      {% endif %}
+    </section>
+    <section class="card">
+      <h2>Order details</h2>
+      <dl class="dl">
+        <dt>Vehicle</dt><dd>{{ order.vehicle_make }} {{ order.vehicle_model }} {{ order.vehicle_year or '' }}</dd>
+        <dt>Engine</dt><dd>{{ order.engine or '—' }}</dd>
+        <dt>Registration</dt><dd>{{ order.registration or '—' }}</dd>
+        <dt>VIN</dt><dd class="mono">{{ order.vin or '—' }}</dd>
+        <dt>ECU</dt><dd>{{ order.ecu_manufacturer }} {{ order.ecu_model }}</dd>
+        <dt>Hardware no.</dt><dd class="mono">{{ order.hardware_number }}</dd>
+        <dt>Software no.</dt><dd class="mono">{{ order.software_number }}</dd>
+        <dt>Read with</dt><dd>{{ order.read_tool or '—' }}{% if order.read_method %} ({{ order.read_method }}){% endif %}</dd>
+        <dt>Service</dt><dd>{{ order.service_requested }}</dd>
+        <dt>Your notes</dt><dd>{{ order.customer_notes or '—' }}</dd>
+        <dt>Credits used</dt><dd>{{ order.credits_charged }}</dd>
+      </dl>
+    </section>
+  </div>
+  <div class="stack">
+    <section class="card">
+      <h2>Files</h2>
+      {% set orig = order.original_file %}
+      {% if orig %}
+      <p><strong>Original</strong> · {{ orig.filename }}<br><span class="muted small">{{ orig.size|filesize }} · uploaded {{ orig.created_at|dt }}</span>
+      <br><a class="small" href="{{ url_for('customer.download', file_id=orig.id) }}">Download original</a></p>
+      {% endif %}
+      {% for f in order.completed_files|reverse %}
+        <p><strong>Completed v{{ f.version }}</strong>{% if f.is_current %} · current{% else %} · <span class="muted">superseded</span>{% endif %}<br>
+        <span class="muted small">{{ f.created_at|dt }}</span></p>
+      {% endfor %}
+    </section>
+    <section class="card">
+      <h2>Timeline</h2>
+      <ul class="timeline">
+        <li>Submitted<div class="muted small">{{ order.created_at|dt }} by {{ order.submitted_by.name }}</div></li>
+        {% if order.approved_at %}<li>Accepted by CAT<div class="muted small">{{ order.approved_at|dt }}</div></li>{% endif %}
+        {% for f in order.completed_files %}<li>File v{{ f.version }} delivered<div class="muted small">{{ f.created_at|dt }}</div></li>{% endfor %}
+        {% if order.rejected_at %}<li>Rejected, credit returned<div class="muted small">{{ order.rejected_at|dt }}</div></li>{% endif %}
+      </ul>
+    </section>
+  </div>
+</div>
+{% endblock %}

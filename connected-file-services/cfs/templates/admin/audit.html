@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Audit log</h1><p>Every sign-in, upload, download, approval, file revision, payment and setting change. Read-only.</p></div></div>
+<form class="filters" method="get">
+  <select name="action" aria-label="Action"><option value="">All actions</option>{% for a in actions %}<option {% if a == action %}selected{% endif %}>{{ a }}</option>{% endfor %}</select>
+  <select name="entity" aria-label="Record type"><option value="">All records</option>{% for e in ['Order', 'OrderFile', 'LibraryFile', 'Workshop', 'User', 'Payment', 'PricePackage', 'ServiceOption'] %}<option {% if e == entity %}selected{% endif %}>{{ e }}</option>{% endfor %}</select>
+  <input type="search" name="actor" value="{{ actor }}" placeholder="User email" aria-label="User email">
+  <button class="btn secondary small" type="submit">Filter</button>
+</form>
+<div class="card"><div class="table-wrap"><table class="responsive">
+  <thead><tr><th>When</th><th>Who</th><th>Action</th><th>Record</th><th>Details</th><th>IP</th></tr></thead>
+  <tbody>{% for r in rows %}
+    <tr><td data-label="When" class="nowrap">{{ r.created_at|dt('%d %b %Y %H:%M:%S') }}</td><td data-label="Who" class="small">{{ r.actor_email or '—' }}</td>
+      <td data-label="Action" class="mono small">{{ r.action }}</td>
+      <td data-label="Record" class="small">{% if r.entity_type == 'Order' %}<a href="{{ url_for('admin.order_detail', order_id=r.entity_id) }}">Order {{ r.entity_id }}</a>{% elif r.entity_type == 'LibraryFile' %}<a href="{{ url_for('admin.library_detail', entry_id=r.entity_id) }}">LIB{{ r.entity_id }}</a>{% elif r.entity_type == 'Workshop' %}<a href="{{ url_for('admin.workshop_detail', workshop_id=r.entity_id) }}">Workshop {{ r.entity_id }}</a>{% elif r.entity_type %}{{ r.entity_type }} {{ r.entity_id }}{% else %}—{% endif %}</td>
+      <td data-label="Details" class="small break">{% for k, v in r.details_dict.items() %}<span class="muted">{{ k }}:</span> {{ v }}{% if not loop.last %}; {% endif %}{% endfor %}</td>
+      <td data-label="IP" class="mono small">{{ r.ip_address or '—' }}</td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No records.</td></tr>{% endfor %}</tbody></table></div>
+  <div class="btn-row mt">
+    {% if page > 1 %}<a class="btn secondary small" href="{{ url_for('admin.audit_log', action=action or None, entity=entity or None, actor=actor or None, page=page - 1) }}">Newer</a>{% endif %}
+    {% if has_more %}<a class="btn secondary small" href="{{ url_for('admin.audit_log', action=action or None, entity=entity or None, actor=actor or None, page=page + 1) }}">Older</a>{% endif %}
+  </div></div>
+{% endblock %}

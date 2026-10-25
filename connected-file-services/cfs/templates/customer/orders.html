@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import pill %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Orders</h1><p>Your file service history.</p></div>
+  <a class="btn" href="{{ url_for('customer.upload') }}">Upload ECU file</a></div>
+<form class="filters" method="get">
+  <div class="chips">
+    {% for key, label in [(None, 'All'), ('active', 'Active'), ('completed', 'Completed'), ('rejected', 'Rejected')] %}
+      <a class="chip {{ 'active' if status == key }}" href="{{ url_for('customer.orders', status=key, q=q or None) }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+  {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+  <input type="search" name="q" value="{{ q }}" placeholder="Search reference, vehicle or registration" aria-label="Search orders">
+  <button class="btn secondary small" type="submit">Search</button>
+</form>
+<div class="card">
+{% if orders %}
+<div class="table-wrap"><table class="responsive">
+  <thead><tr><th>Reference</th><th>Vehicle</th><th>ECU</th><th>Service</th><th>Status</th><th>Submitted</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr data-href="{{ url_for('customer.order_detail', order_id=o.id) }}">
+      <td data-label="Reference"><a class="mono" href="{{ url_for('customer.order_detail', order_id=o.id) }}">{{ o.reference }}</a></td>
+      <td data-label="Vehicle">{{ o.vehicle_make }} {{ o.vehicle_model }}{% if o.registration %}<div class="muted small">{{ o.registration }}</div>{% endif %}</td>
+      <td data-label="ECU">{{ o.ecu_manufacturer }} {{ o.ecu_model }}</td>
+      <td data-label="Service">{{ o.service_requested }}</td>
+      <td data-label="Status">{{ pill(o.status) }}</td>
+      <td data-label="Submitted" class="nowrap">{{ o.created_at|dt }}</td>
+    </tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}<p class="muted">No orders found.</p>{% endif %}
+</div>
+{% endblock %}

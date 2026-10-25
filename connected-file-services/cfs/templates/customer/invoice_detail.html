@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.number }}{% endblock %}
+{% block content %}
+<div class="btn-row no-print"><a class="btn secondary small" href="{{ url_for('admin.invoices' if g.user.is_admin else 'customer.invoices') }}">Back</a>
+  <button class="btn small" type="button" data-print>Print or save as PDF</button></div>
+<article class="card invoice mt">
+  <div class="invoice-head">
+    <div><div class="brand">{% include "partials/logo.html" %}</div>
+      <h1 class="mt">VAT invoice</h1><div class="mono">{{ invoice.number }}</div></div>
+    <div class="small"><strong>{{ config.SELLER_NAME }}</strong><br>{{ config.SELLER_ADDRESS }}<br>VAT no. {{ config.SELLER_VAT_NUMBER }}</div>
+  </div>
+  <div class="grid grid-2">
+    <div><div class="eyebrow">Bill to</div><pre>{{ invoice.bill_to }}</pre></div>
+    <div><dl class="dl"><dt>Invoice date</dt><dd>{{ invoice.issued_at|dt('%d %B %Y') }}</dd>
+      <dt>Tax point</dt><dd>{{ invoice.payment.paid_at|dt('%d %B %Y') }}</dd>
+      <dt>Payment</dt><dd>Paid by card{% if invoice.payment.provider == 'demo' %} (demo){% endif %}</dd></dl></div>
+  </div>
+  <div class="table-wrap mt"><table>
+    <thead><tr><th>Description</th><th class="num">Net</th><th class="num">VAT {{ invoice.vat_rate_bp|pct }}</th><th class="num">Total</th></tr></thead>
+    <tbody><tr><td>{{ invoice.description }}</td><td class="num">{{ invoice.net_pence|money }}</td><td class="num">{{ invoice.vat_pence|money }}</td><td class="num">{{ invoice.gross_pence|money }}</td></tr></tbody>
+  </table></div>
+  <dl class="dl mt"><dt>Total excluding VAT</dt><dd class="right">{{ invoice.net_pence|money }}</dd>
+    <dt>VAT at {{ invoice.vat_rate_bp|pct }}</dt><dd class="right">{{ invoice.vat_pence|money }}</dd>
+    <dt><strong>Total paid</strong></dt><dd class="right"><strong>{{ invoice.gross_pence|money }}</strong></dd></dl>
+  {% if invoice.payment.provider == 'demo' %}<p class="small muted mt">Demonstration invoice. No payment was taken.</p>{% endif %}
+</article>
+{% endblock %}

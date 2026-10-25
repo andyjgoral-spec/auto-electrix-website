@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, field, pill %}
+{% block title %}Workshop details{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="eyebrow">Account</div><h1>{{ ws.name }}</h1><p>These details appear on new invoices.</p></div>{{ pill(ws.status) }}</div>
+<form method="post" class="card" novalidate>{{ csrf() }}
+  <div class="form-grid">
+    {{ field('contact_name', 'Contact name', ws.contact_name, required=True) }}
+    {{ field('phone', 'Phone', ws.phone, type='tel', required=True) }}
+    <div class="full">{{ field('address', 'Address', ws.address, required=True) }}</div>
+    {{ field('city', 'Town or city', ws.city, required=True) }}
+    {{ field('postcode', 'Postcode', ws.postcode, required=True) }}
+    {{ field('country', 'Country', ws.country, required=True) }}
+    {{ field('vat_number', 'VAT number', ws.vat_number) }}
+  </div>
+  <p class="small muted">To change the workshop name or sign-in email, contact CAT.</p>
+  <button class="btn" type="submit">Save details</button>
+</form>
+{% endblock %}

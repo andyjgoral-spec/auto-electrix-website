@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="code">{{ code }}</div>
+  <h1>{{ title }}</h1>
+  {% if description and code != 404 %}<p class="muted">{{ description }}</p>{% endif %}
+  <p><a class="btn secondary" href="{{ url_for('auth.index') }}">Go to your dashboard</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf, field %}
+{% block title %}Upload ECU file{% endblock %}
+{% block content %}
+{% include "partials/pending_notice.html" %}
+<div class="page-head">
+  <div><div class="eyebrow">New order</div><h1>Upload ECU file</h1>
+  <p>Send the unmodified original read. One file credit is used per order and returned if CAT rejects it.</p></div>
+  <div class="card dark stat"><span class="stat-label">Credits available</span><span class="stat-value">{{ ws.credit_balance }}</span></div>
+</div>
+{% if ws.is_active and ws.credit_balance < 1 %}
+<div class="notice"><strong>You have no file credits.</strong> <a href="{{ url_for('customer.credits') }}">Buy credits</a> to upload a file.</div>
+{% endif %}
+<form method="post" enctype="multipart/form-data" class="card" data-once novalidate>
+  {{ csrf() }}
+  <fieldset><legend><span class="step-num">1</span> Vehicle</legend>
+  <div class="form-grid">
+    {{ field('vehicle_make', 'Make', form.vehicle_make, required=True, hint='For example Volkswagen') }}
+    {{ field('vehicle_model', 'Model', form.vehicle_model, required=True, hint='For example Golf 2.0 TDI') }}
+    {{ field('vehicle_year', 'Year', form.vehicle_year, attrs='inputmode="numeric" maxlength="10"') }}
+    {{ field('engine', 'Engine', form.engine, hint='Engine code or power, e.g. CRLB 150 PS') }}
+    {{ field('registration', 'Registration', form.registration, attrs='autocapitalize="characters"') }}
+    {{ field('vin', 'VIN', form.vin, hint='17 characters', attrs='maxlength="17" autocapitalize="characters"') }}
+  </div></fieldset>
+
+  <fieldset><legend><span class="step-num">2</span> ECU identification</legend>
+  <p class="hint">Copy these exactly as your read tool shows them. CAT checks them against the file before any work starts.</p>
+  <div class="form-grid">
+    <div class="field"><label for="ecu_manufacturer">ECU manufacturer</label>
+      <select id="ecu_manufacturer" name="ecu_manufacturer" required>
+        <option value="">Choose…</option>
+        {% for m in manufacturers %}<option {% if form.ecu_manufacturer == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+      </select></div>
+    {{ field('ecu_model', 'ECU model', form.ecu_model, required=True, hint='For example EDC17C64') }}
+    {{ field('hardware_number', 'Hardware number', form.hardware_number, required=True, attrs='class="mono" autocapitalize="characters"') }}
+    {{ field('software_number', 'Software number', form.software_number, required=True, attrs='class="mono" autocapitalize="characters"') }}
+    {{ field('read_tool', 'Read tool', form.read_tool, hint='Tool used to read the ECU') }}
+    <div class="field"><label for="read_method">Read method <span class="req">(optional)</span></label>
+      <select id="read_method" name="read_method"><option value="">Choose…</option>
+        {% for m in read_methods %}<option {% if form.read_method == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+      </select></div>
+  </div></fieldset>
+
+  <fieldset><legend><span class="step-num">3</span> Service</legend>
+  <div class="field"><label for="service_requested">Service requested</label>
+    <select id="service_requested" name="service_requested" required>
+      <option value="">Choose…</option>
+      {% for s in services %}<option {% if form.service_requested == s.name %}selected{% endif %}>{{ s.name }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label for="customer_notes">Notes for CAT <span class="req">(optional)</span></label>
+    <textarea id="customer_notes" name="customer_notes" maxlength="2000" placeholder="Modifications on the vehicle, fault codes, anything we should know">{{ form.customer_notes or '' }}</textarea></div>
+  </fieldset>
+
+  <fieldset><legend><span class="step-num">4</span> Original file</legend>
+  <div class="dropzone" data-dropzone>
+    <strong>Choose the original ECU read</strong>
+    <span class="hint" data-filename>.bin, .ori, .hex, .s19, .frf and other common read formats · up to 16 MB</span>
+    <div class="mt"><input type="file" name="ecu_file" id="ecu_file" required aria-label="ECU file"></div>
+  </div>
+  </fieldset>
+
+  <label class="check mt"><input type="checkbox" name="declaration" value="1" {% if form.declaration %}checked{% endif %}>
+    <span>I confirm this is the unmodified original file read from the vehicle described above, and that I have the owner's permission to work on it.</span></label>
+  <div class="btn-row">
+    <button class="btn" type="submit" {% if not ws.is_active or ws.credit_balance < 1 %}disabled{% endif %}>Submit order · use 1 credit</button>
+    <a class="btn ghost" href="{{ url_for('customer.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

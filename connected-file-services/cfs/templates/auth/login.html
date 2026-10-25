@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "partials/macros.html" import csrf %}
+{% block title %}Sign in{% endblock %}
+{% block full %}
+<div class="auth-wrap">
+  {% include "partials/hero.html" %}
+  <section class="auth-form">
+    <div class="card">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}<ul class="flashes" role="status">{% for cat, msg in messages %}<li class="flash {{ cat }}">{{ msg }}</li>{% endfor %}</ul>{% endif %}
+      {% endwith %}
+      <div class="eyebrow">Workshop &amp; CAT staff</div>
+      <h2>Sign in</h2>
+      <form method="post" novalidate>
+        {{ csrf() }}
+        <div class="field"><label for="email">Email</label>
+          <input type="email" id="email" name="email" value="{{ email or '' }}" autocomplete="username" required autofocus></div>
+        <div class="field"><label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required></div>
+        <button class="btn block" type="submit">Sign in</button>
+      </form>
+      <p class="small muted">New workshop? <a href="{{ url_for('auth.register') }}">Register an account</a>.</p>
+    </div>
+  </section>
+</div>
+{% endblock %}
